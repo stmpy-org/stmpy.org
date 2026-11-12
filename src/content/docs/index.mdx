@@ -1,0 +1,32 @@
+---
+title: StmPy Studio
+description: Desktop IDE for programming STM32 microcontrollers in Python syntax.
+template: splash
+hero:
+  title: StmPy Studio
+  tagline: Program STM32 boards in Python syntax — from one desktop IDE.
+  actions:
+    - text: Download Studio
+      link: /downloads/
+      icon: download
+    - text: Read the tutorials
+      link: /tutorials/
+      icon: open-book
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+StmPy Studio edits, builds and flashes firmware. StmPy translates your Python-syntax program to C on the STM32 HAL, so it runs as fast as hand-written C — with no interpreter on the chip.
+
+<CardGrid>
+	<Card title="Editor + language server" icon="pencil">
+		Monaco with completion, hover and diagnostics. Pin arguments list the pins of your chip.
+	</Card>
+	<Card title="One-click build & flash" icon="rocket">
+		Bundled stmpy, arm-none-eabi-gcc and probe-rs. No separate toolchain hunt.
+	</Card>
+	<Card title="Clock tree & project wizard" icon="setting">
+		New projects pick a chip and clocks, then write a blinking LED in minutes.
+	</Card>
+</CardGrid>

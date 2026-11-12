@@ -1,0 +1,20 @@
+{
+  "name": "stmpy.org",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync-docs": "node scripts/sync-stmpy-docs.mjs",
+    "check:links": "node scripts/check-internal-links.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "0.37.3",
+    "astro": "5.18.2",
+    "sharp": "^0.33.5"
+  }
+}

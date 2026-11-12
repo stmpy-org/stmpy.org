@@ -1,0 +1,34 @@
+---
+title: StmPy Studio
+description: Python 構文で STM32 を書くデスクトップ IDE。
+template: splash
+hero:
+  title: StmPy Studio
+  tagline: Python 構文で STM32 を書く——ひとつのデスクトップ IDE で。
+  actions:
+    - text: Studio を入手
+      link: /ja/downloads/
+      icon: download
+    - text: チュートリアルを読む
+      link: /ja/tutorials/
+      icon: open-book
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+StmPy Studio は編集・ビルド・書き込みまで。StmPy は Python 構文を STM32 HAL 上の C に翻訳し、手書き C と同じ速さで動きます（チップ上にインタプリタは不要）。
+
+チュートリアルは英語／中国語のみです。日本語ページでは英語版にフォールバックします。
+
+<CardGrid>
+	<Card title="エディタと language server" icon="pencil">
+		Monaco の補完・ホバー・診断。ピン引数ではチップのピンが出ます。
+	</Card>
+	<Card title="ワンクリックでビルド＆書き込み" icon="rocket">
+		stmpy、arm-none-eabi-gcc、probe-rs 同梱。
+	</Card>
+	<Card title="クロックツリーとウィザード" icon="setting">
+		新規プロジェクトでチップとクロックを選び、すぐに LED 点滅を書けます。
+	</Card>
+</CardGrid>

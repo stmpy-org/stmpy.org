@@ -1,0 +1,47 @@
+/* StmPy Studio site — steel/teal engineering look (not default purple). */
+:root {
+	--sl-color-accent-low: #d7ebe6;
+	--sl-color-accent: #0f766e;
+	--sl-color-accent-high: #115e59;
+	--sl-hue-accent: 174;
+}
+
+:root[data-theme='dark'] {
+	--sl-color-accent-low: #0f2f2c;
+	--sl-color-accent: #2dd4bf;
+	--sl-color-accent-high: #99f6e4;
+}
+
+.hero {
+	padding-block: clamp(2rem, 8vh, 5rem);
+}
+
+.hero .tagline {
+	max-width: 36rem;
+}
+
+.site-hero-brand {
+	font-size: clamp(2.4rem, 6vw, 4rem);
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.05;
+	margin: 0 0 0.75rem;
+}
+
+.feature-list {
+	display: grid;
+	gap: 1.25rem;
+	margin-top: 2.5rem;
+	padding: 0;
+	list-style: none;
+}
+
+.feature-list li {
+	padding-block: 0.35rem;
+	border-top: 1px solid var(--sl-color-gray-5);
+}
+
+.feature-list strong {
+	display: block;
+	margin-bottom: 0.25rem;
+}

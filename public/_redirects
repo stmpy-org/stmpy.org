@@ -1,0 +1,2 @@
+# Cloudflare Pages path redirects (www → apex is a Cloudflare host redirect / Bulk Redirect).
+# Keep trailing-slash canonicalization soft; Astro already emits trailing slashes.

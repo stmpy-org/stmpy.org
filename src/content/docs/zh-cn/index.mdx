@@ -1,0 +1,32 @@
+---
+title: StmPy Studio
+description: 用 Python 语法给 STM32 写固件的桌面 IDE。
+template: splash
+hero:
+  title: StmPy Studio
+  tagline: 用 Python 语法给 STM32 写固件——在一个桌面 IDE 里完成。
+  actions:
+    - text: 下载 Studio
+      link: /zh-cn/downloads/
+      icon: download
+    - text: 阅读教程
+      link: /zh-cn/tutorials/
+      icon: open-book
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+StmPy Studio 负责编辑、编译和烧录。StmPy 把 Python 语法的程序翻译成基于 STM32 HAL 的 C，跑起来和手写 C 一样快，芯片上也不需要解释器。
+
+<CardGrid>
+	<Card title="编辑器与语言服务" icon="pencil">
+		Monaco 补全、悬停和诊断；引脚参数会列出当前芯片可用引脚。
+	</Card>
+	<Card title="一键编译与烧录" icon="rocket">
+		内置 stmpy、arm-none-eabi-gcc 和 probe-rs，不用再找工具链。
+	</Card>
+	<Card title="时钟树与工程向导" icon="setting">
+		新建工程选芯片和时钟，几分钟就能写出闪灯程序。
+	</Card>
+</CardGrid>

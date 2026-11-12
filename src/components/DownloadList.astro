@@ -1,0 +1,170 @@
+---
+import { DOWNLOAD_BASE_URL } from '../data/config';
+import latest from '../data/downloads/latest.json';
+import manifest002 from '../data/downloads/0.0.2.json';
+import { normalizeLocale, ui } from '../data/ui';
+
+type Asset = {
+	id: string;
+	platform: string;
+	os: string;
+	ext: string;
+	filename: string;
+	label: Record<string, string>;
+};
+
+type Manifest = {
+	version: string;
+	bundledStmpy?: string;
+	notesUrl?: string;
+	assets: Asset[];
+	installHints?: Record<string, Record<string, string>>;
+};
+
+const locale = normalizeLocale(Astro.props.locale ?? Astro.currentLocale);
+const t = ui(locale);
+
+const catalog: Record<string, Manifest> = {
+	'0.0.2': manifest002 as Manifest,
+};
+const manifest = catalog[latest.version];
+if (!manifest) {
+	throw new Error(`missing manifest for version ${latest.version}`);
+}
+
+function assetUrl(filename: string) {
+	return `${DOWNLOAD_BASE_URL}/${manifest.version}/${filename}`;
+}
+
+function labelFor(asset: Asset) {
+	return asset.label[locale] ?? asset.label.en ?? asset.filename;
+}
+
+function hint(key: string) {
+	const block = manifest.installHints?.[key];
+	if (!block) return null;
+	return block[locale] ?? block.en ?? null;
+}
+
+const macosHint = hint('macos');
+const linuxHint = hint('linux-appimage');
+---
+
+<section class="dl">
+	<header class="dl__head">
+		<h1>{t.downloadHeading}</h1>
+		<p>{t.downloadLead}</p>
+		<p class="dl__meta">
+			<span>{t.versionLabel}: <strong>{manifest.version}</strong></span>
+			{
+				manifest.bundledStmpy && (
+					<span>
+						{t.bundledLabel}: <strong>{manifest.bundledStmpy}</strong>
+					</span>
+				)
+			}
+			{
+				manifest.notesUrl && (
+					<a href={manifest.notesUrl} rel="noopener noreferrer">
+						{t.releaseNotes}
+					</a>
+				)
+			}
+		</p>
+		<p class="dl__note">{t.placeholderNote}</p>
+	</header>
+
+	<ul class="dl__list">
+		{
+			manifest.assets.map((asset) => (
+				<li>
+					<a class="dl__btn" href={assetUrl(asset.filename)}>
+						<span class="dl__label">{labelFor(asset)}</span>
+						<code class="dl__file">{asset.filename}</code>
+					</a>
+				</li>
+			))
+		}
+	</ul>
+
+	{
+		macosHint && (
+			<aside class="dl__hint">
+				<strong>{t.macosHintTitle}</strong>
+				<p>{macosHint}</p>
+			</aside>
+		)
+	}
+	{
+		linuxHint && (
+			<aside class="dl__hint">
+				<strong>{t.linuxHintTitle}</strong>
+				<p>{linuxHint}</p>
+			</aside>
+		)
+	}
+</section>
+
+<style>
+	.dl {
+		display: grid;
+		gap: 1.5rem;
+		max-width: 42rem;
+	}
+	.dl__head h1 {
+		font-size: var(--sl-text-3xl);
+		margin: 0 0 0.5rem;
+	}
+	.dl__head p {
+		margin: 0.35rem 0;
+		color: var(--sl-color-gray-2);
+	}
+	.dl__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem 1.25rem;
+		font-size: var(--sl-text-sm);
+	}
+	.dl__note {
+		font-size: var(--sl-text-sm);
+		color: var(--sl-color-gray-3);
+	}
+	.dl__list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: 0.75rem;
+	}
+	.dl__btn {
+		display: grid;
+		gap: 0.25rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.35rem;
+		text-decoration: none;
+		color: inherit;
+		background: color-mix(in srgb, var(--sl-color-gray-6) 55%, transparent);
+		transition: border-color 0.15s ease, background 0.15s ease;
+	}
+	.dl__btn:hover {
+		border-color: var(--sl-color-accent);
+		background: color-mix(in srgb, var(--sl-color-accent-low) 40%, transparent);
+	}
+	.dl__label {
+		font-weight: 600;
+	}
+	.dl__file {
+		font-size: var(--sl-text-xs);
+		opacity: 0.85;
+	}
+	.dl__hint {
+		padding: 0.85rem 1rem;
+		border-left: 3px solid var(--sl-color-accent);
+		background: color-mix(in srgb, var(--sl-color-accent-low) 35%, transparent);
+	}
+	.dl__hint p {
+		margin: 0.35rem 0 0;
+		font-size: var(--sl-text-sm);
+	}
+</style>
