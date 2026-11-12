@@ -21,9 +21,14 @@ const locale: UiLocale = slLocale === 'root' ? 'en' : (slLocale as UiLocale);
 		padding: 0 !important;
 		height: auto !important;
 		min-height: 64px;
+		width: 100% !important;
+		max-width: none !important;
 		background: transparent !important;
 		border-bottom: none !important;
 		box-shadow: none !important;
+		/* Starlight uses inset padding vars — zero them so mkt-header padding matches marketing pages */
+		--sl-nav-pad-x: 0;
+		--sl-nav-pad: 0;
 	}
 	header.header .mkt-header {
 		border-bottom: none;

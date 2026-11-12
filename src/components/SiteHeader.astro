@@ -161,13 +161,15 @@ const locales = localeMeta.map((l) => ({ ...l, href: hrefForLocale(l.id) }));
 		display: block;
 		flex-shrink: 0;
 	}
+	/* Nav sits immediately after the brand; never centered — tools absorb the right side. */
 	.mkt-nav {
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		align-items: center;
-		gap: var(--space-sm) var(--space-md);
-		margin-inline: auto;
+		gap: var(--space-md);
+		margin: 0;
 		min-width: 0;
+		flex: 0 1 auto;
 	}
 	.mkt-nav a {
 		color: inherit;
@@ -186,16 +188,21 @@ const locales = localeMeta.map((l) => ({ ...l, href: hrefForLocale(l.id) }));
 		display: flex;
 		align-items: center;
 		gap: var(--space-sm);
-		margin-inline-start: 0;
+		margin-inline-start: auto;
 		flex-shrink: 0;
 	}
 	.mkt-search {
 		display: flex;
 		align-items: center;
-		max-width: 180px;
+		max-width: 160px;
 	}
 	.mkt-search :global(site-search) {
 		display: block;
+		width: 100%;
+	}
+	.mkt-search :global(site-search button[data-open-modal]) {
+		width: 100%;
+		max-width: 160px;
 	}
 	.mkt-select select {
 		appearance: none;
