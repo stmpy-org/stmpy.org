@@ -1,0 +1,11 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import HomePage from '../components/HomePage.astro';
+import { homeCopy } from '../data/home';
+
+const t = homeCopy('en');
+---
+
+<MarketingLayout locale="en" title={t.metaTitle} description={t.metaDescription} active="home">
+	<HomePage locale="en" />
+</MarketingLayout>

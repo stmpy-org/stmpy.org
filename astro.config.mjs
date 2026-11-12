@@ -76,20 +76,10 @@ export default defineConfig({
 			editLink: {
 				baseUrl: 'https://github.com/stmpy-org/stmpy.org/edit/master/',
 			},
-			sidebar: [
-				{
-					label: 'Downloads',
-					translations: {
-						'zh-CN': '下载',
-						ja: 'ダウンロード',
-						es: 'Descargas',
-					},
-					slug: 'downloads',
-				},
-				...tutorialSidebar,
-			],
+			sidebar: [...tutorialSidebar],
 			components: {
 				Head: './src/components/overrides/Head.astro',
+				Header: './src/components/overrides/Header.astro',
 				SiteTitle: './src/components/overrides/SiteTitle.astro',
 				Hero: './src/components/overrides/Hero.astro',
 			},

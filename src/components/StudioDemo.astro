@@ -1,0 +1,426 @@
+---
+/**
+ * Faithful CSS/JS mockup of StmPy Studio (write → build → flash success).
+ * Swap with a real recording by placing files under public/media/studio-demo/
+ * (see README). Prefer video when present; mockup is the default fallback.
+ */
+const videoWebm = '/media/studio-demo/studio-demo.webm';
+const videoMp4 = '/media/studio-demo/studio-demo.mp4';
+const poster = '/media/studio-demo/poster.png';
+---
+
+<figure class="studio-demo">
+	<div class="studio-demo__stage" data-studio-demo>
+		<video
+			class="studio-demo__video"
+			data-demo-video
+			muted
+			playsinline
+			autoplay
+			loop
+			preload="metadata"
+			poster={poster}
+			hidden
+		>
+			<source data-src-webm={videoWebm} type="video/webm" />
+			<source data-src-mp4={videoMp4} type="video/mp4" />
+		</video>
+
+		<div class="studio-window" data-demo-mockup aria-hidden="false">
+			<div class="studio-window__chrome">
+				<span class="dot dot--r"></span>
+				<span class="dot dot--y"></span>
+				<span class="dot dot--g"></span>
+				<span class="studio-window__title">StmPy Studio</span>
+			</div>
+			<div class="studio-app">
+				<header class="studio-toolbar">
+					<div class="studio-toolbar__title">
+						<span class="studio-project">blink</span>
+						<span class="studio-chip">STM32F103C8T6</span>
+					</div>
+					<div class="studio-toolbar__actions">
+						<button type="button" class="studio-tool" data-build-btn title="Build" aria-label="Build">
+							<svg viewBox="0 0 24 24" aria-hidden="true"
+								><path
+									d="m15 12-8.373 8.373a1 1 0 1 1-3-3L12 9M18 15l4-4M21.5 11.5l-1.914-1.914A2 2 0 0 1 19 8.172V7l-2.26-2.26a6 6 0 0 0-4.202-1.756L9 2.96"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"></path
+							></svg>
+						</button>
+						<button type="button" class="studio-tool" data-flash-btn title="Flash" aria-label="Flash">
+							<svg viewBox="0 0 24 24" aria-hidden="true"
+								><path
+									d="M12 15V3M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"></path
+							></svg>
+						</button>
+					</div>
+				</header>
+				<div class="studio-main">
+					<aside class="studio-side">
+						<div class="studio-side__label">blink</div>
+						<div class="studio-file is-active">main.py</div>
+						<div class="studio-file">blink.spp</div>
+					</aside>
+					<div class="studio-editor">
+						<div class="studio-tab">main.py</div>
+						<pre class="studio-code"><code data-code></code><span class="studio-caret" data-caret></span></pre>
+					</div>
+				</div>
+				<div class="studio-term">
+					<div class="studio-term__label">Output</div>
+					<pre class="studio-term__body" data-term></pre>
+				</div>
+			</div>
+		</div>
+	</div>
+	<figcaption class="studio-demo__caption">
+		<slot />
+	</figcaption>
+</figure>
+
+<script>
+	const FULL = `from stmpy import GPIO, delay_ms
+
+led = GPIO("PC13")
+
+def main():
+    while True:
+        led.toggle()
+        delay_ms(500)
+`;
+
+	async function probe(url) {
+		try {
+			const res = await fetch(url, { method: 'HEAD' });
+			return res.ok;
+		} catch {
+			return false;
+		}
+	}
+
+	function sleep(ms) {
+		return new Promise((r) => setTimeout(r, ms));
+	}
+
+	async function runMockup(root) {
+		const codeEl = root.querySelector('[data-code]');
+		const termEl = root.querySelector('[data-term]');
+		const buildBtn = root.querySelector('[data-build-btn]');
+		const flashBtn = root.querySelector('[data-flash-btn]');
+		if (!codeEl || !termEl) return;
+
+		while (true) {
+			codeEl.textContent = '';
+			termEl.textContent = '';
+			buildBtn?.classList.remove('is-busy', 'is-done');
+			flashBtn?.classList.remove('is-busy', 'is-done');
+
+			for (let i = 0; i < FULL.length; i++) {
+				codeEl.textContent = FULL.slice(0, i + 1);
+				if (i % 3 === 0) await sleep(18);
+			}
+			await sleep(500);
+
+			buildBtn?.classList.add('is-busy');
+			termEl.textContent = '$ stmpy build blink.spp\n';
+			await sleep(400);
+			termEl.textContent += 'flash: 2848 / 65536 bytes (4.3%)\n';
+			await sleep(280);
+			termEl.textContent += 'ram:   1592 / 20480 bytes (7.8%) (with stack and heap)\n';
+			await sleep(280);
+			termEl.textContent += '/Users/you/blink/build/blink.hex\n';
+			buildBtn?.classList.remove('is-busy');
+			buildBtn?.classList.add('is-done');
+			await sleep(700);
+
+			// Flash success as designed mockup (no board required).
+			flashBtn?.classList.add('is-busy');
+			termEl.textContent += '\n$ probe-rs download --chip STM32F103C8Tx --binary-format hex --reset --non-interactive build/blink.hex\n';
+			await sleep(500);
+			termEl.textContent += 'Finished in 0.42s\n';
+			await sleep(200);
+			termEl.textContent += 'Resetting target...\n';
+			await sleep(350);
+			termEl.textContent += 'Done.\n';
+			flashBtn?.classList.remove('is-busy');
+			flashBtn?.classList.add('is-done');
+			await sleep(2200);
+		}
+	}
+
+	document.querySelectorAll('[data-studio-demo]').forEach(async (root) => {
+		const video = root.querySelector('[data-demo-video]');
+		const mockup = root.querySelector('[data-demo-mockup]');
+		const webm = video?.querySelector('[data-src-webm]');
+		const mp4 = video?.querySelector('[data-src-mp4]');
+		const hasWebm = webm && (await probe(webm.getAttribute('data-src-webm')));
+		const hasMp4 = mp4 && (await probe(mp4.getAttribute('data-src-mp4')));
+
+		if (video && (hasWebm || hasMp4)) {
+			if (hasWebm) {
+				const s = document.createElement('source');
+				s.src = webm.getAttribute('data-src-webm');
+				s.type = 'video/webm';
+				video.appendChild(s);
+			}
+			if (hasMp4) {
+				const s = document.createElement('source');
+				s.src = mp4.getAttribute('data-src-mp4');
+				s.type = 'video/mp4';
+				video.appendChild(s);
+			}
+			video.hidden = false;
+			if (mockup) mockup.hidden = true;
+			video.load();
+			video.play().catch(() => {});
+			return;
+		}
+
+		if (mockup) runMockup(mockup);
+	});
+</script>
+
+<style>
+	.studio-demo {
+		margin: 0;
+	}
+	.studio-demo__stage {
+		border-radius: var(--radius-app-lg);
+		overflow: hidden;
+		border: 1px solid var(--color-hairline-soft);
+		background: #1e1e1e;
+		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+	}
+	:global(:root[data-theme='light']) .studio-demo__stage {
+		border-color: var(--color-hairline);
+	}
+	.studio-demo__video {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		background: #1e1e1e;
+	}
+	.studio-demo__caption {
+		margin-top: var(--space-sm);
+		font-size: var(--type-caption);
+		color: var(--color-mute);
+	}
+
+	.studio-window {
+		--s-bg: #1e1e1e;
+		--s-side: #252526;
+		--s-bar: #2d2d2d;
+		--s-border: #3c3c3c;
+		--s-text: #cccccc;
+		--s-dim: #8b8b8b;
+		--s-accent: #0e639c;
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+		font-size: 12.5px;
+		color: var(--s-text);
+		background: var(--s-bg);
+	}
+	.studio-window__chrome {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		height: 28px;
+		padding: 0 10px;
+		background: #2a2a2a;
+		border-bottom: 1px solid var(--s-border);
+	}
+	.dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+	}
+	.dot--r {
+		background: #ff5f57;
+	}
+	.dot--y {
+		background: #febc2e;
+	}
+	.dot--g {
+		background: #28c840;
+	}
+	.studio-window__title {
+		margin-left: 8px;
+		font-size: 11px;
+		color: var(--s-dim);
+	}
+	.studio-app {
+		display: flex;
+		flex-direction: column;
+		min-height: 320px;
+	}
+	.studio-toolbar {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: center;
+		height: 40px;
+		padding: 0 10px;
+		background: var(--s-bar);
+		border-bottom: 1px solid var(--s-border);
+	}
+	.studio-toolbar__title {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		justify-self: center;
+		grid-column: 1 / -1;
+		pointer-events: none;
+	}
+	.studio-toolbar__actions {
+		grid-column: 2;
+		grid-row: 1;
+		display: flex;
+		gap: 2px;
+		justify-self: end;
+		z-index: 1;
+	}
+	.studio-project {
+		font-weight: 600;
+	}
+	.studio-chip {
+		font-size: 11px;
+		color: var(--s-dim);
+		border: 1px solid var(--s-border);
+		border-radius: 10px;
+		padding: 1px 8px;
+	}
+	.studio-tool {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border: none;
+		border-radius: 3px;
+		background: transparent;
+		color: var(--s-text);
+		cursor: default;
+	}
+	.studio-tool svg {
+		width: 16px;
+		height: 16px;
+	}
+	.studio-tool.is-busy {
+		color: var(--s-accent);
+	}
+	.studio-tool.is-done {
+		color: #37cd84;
+	}
+	.studio-main {
+		display: flex;
+		min-height: 180px;
+		flex: 1;
+	}
+	.studio-side {
+		width: 120px;
+		flex-shrink: 0;
+		background: var(--s-side);
+		border-right: 1px solid var(--s-border);
+		padding: 8px;
+	}
+	.studio-side__label {
+		font-size: 10px;
+		color: var(--s-dim);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin-bottom: 6px;
+	}
+	.studio-file {
+		padding: 3px 6px;
+		border-radius: 3px;
+		color: var(--s-dim);
+	}
+	.studio-file.is-active {
+		background: #37373d;
+		color: var(--s-text);
+	}
+	.studio-editor {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		background: var(--s-bg);
+	}
+	.studio-tab {
+		height: 28px;
+		display: flex;
+		align-items: center;
+		padding: 0 12px;
+		border-bottom: 1px solid var(--s-border);
+		background: #2d2d2d;
+		color: var(--s-text);
+		width: fit-content;
+	}
+	.studio-code {
+		margin: 0;
+		padding: 12px 14px;
+		flex: 1;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 12px;
+		line-height: 1.45;
+		white-space: pre-wrap;
+		color: #d4d4d4;
+		position: relative;
+	}
+	.studio-caret {
+		display: inline-block;
+		width: 7px;
+		height: 1.1em;
+		background: #aeafad;
+		vertical-align: text-bottom;
+		animation: blink 1s step-end infinite;
+	}
+	@keyframes blink {
+		50% {
+			opacity: 0;
+		}
+	}
+	.studio-term {
+		border-top: 1px solid var(--s-border);
+		background: #1a1a1a;
+		min-height: 96px;
+		max-height: 120px;
+		overflow: hidden;
+	}
+	.studio-term__label {
+		font-size: 10px;
+		color: var(--s-dim);
+		padding: 4px 10px;
+		border-bottom: 1px solid var(--s-border);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+	.studio-term__body {
+		margin: 0;
+		padding: 8px 10px;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 11px;
+		line-height: 1.4;
+		color: #9cdcfe;
+		white-space: pre-wrap;
+		min-height: 4.5em;
+	}
+
+	@media (max-width: 640px) {
+		.studio-side {
+			display: none;
+		}
+		.studio-app {
+			min-height: 280px;
+		}
+	}
+</style>

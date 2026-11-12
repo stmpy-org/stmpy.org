@@ -1,0 +1,67 @@
+---
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import type { UiLocale } from '../data/ui';
+import '../styles/custom.css';
+
+interface Props {
+	locale: UiLocale;
+	title: string;
+	description: string;
+	active?: 'home' | 'downloads' | 'tutorials';
+}
+
+const { locale, title, description, active = 'home' } = Astro.props;
+const lang = locale === 'zh-cn' ? 'zh-CN' : locale;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<script is:inline>
+			(function () {
+				try {
+					var key = 'starlight-theme';
+					if (!localStorage.getItem(key)) localStorage.setItem(key, 'dark');
+					var v = localStorage.getItem(key) || 'dark';
+					var theme =
+						v === 'auto'
+							? matchMedia('(prefers-color-scheme: light)').matches
+								? 'light'
+								: 'dark'
+							: v;
+					document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark';
+				} catch (e) {}
+			})();
+		</script>
+	</head>
+	<body class="mkt-body">
+		<SiteHeader locale={locale} active={active} />
+		<main class="mkt-main">
+			<slot />
+		</main>
+		<SiteFooter locale={locale} />
+	</body>
+</html>
+
+<style is:global>
+	.mkt-body {
+		margin: 0;
+		min-height: 100vh;
+		background: var(--color-canvas);
+		color: var(--color-on-primary);
+		font-family: var(--font-sans);
+	}
+	:root[data-theme='light'] .mkt-body {
+		background: var(--color-canvas-light);
+		color: var(--color-ink);
+	}
+	.mkt-main {
+		display: block;
+	}
+</style>

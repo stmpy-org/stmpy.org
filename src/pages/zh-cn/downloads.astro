@@ -1,0 +1,9 @@
+---
+import MarketingLayout from '../../layouts/MarketingLayout.astro';
+import DownloadsPage from '../../components/DownloadsPage.astro';
+import { ui } from '../../data/ui';
+const d = ui('zh-cn');
+---
+<MarketingLayout locale="zh-cn" title={`${d.downloadHeading} · StmPy Studio`} description={d.downloadLead} active="downloads">
+	<DownloadsPage locale="zh-cn" />
+</MarketingLayout>

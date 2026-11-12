@@ -4,18 +4,34 @@ Public website for **[StmPy Studio](https://github.com/stmpy-org/stmpy-studio)**
 
 - **Site:** https://stmpy.org (apex canonical; redirect `www` → apex in Cloudflare)
 - **Downloads host:** https://dl.stmpy.org (R2; base URL is `DOWNLOAD_BASE_URL` in `src/data/config.ts`)
-- **Stack:** Astro 5 + Starlight, static build → Cloudflare Pages via Wrangler
+- **Stack:** Astro 5 + Starlight (tutorials) + custom marketing pages, static → Cloudflare Pages via Wrangler
 
 ## Pages
 
 | Path | Content |
 |---|---|
-| `/`, `/zh-cn/`, `/ja/`, `/es/` | Studio landing (chrome in four locales) |
-| `/tutorials/…`, `/zh-cn/tutorials/…` | Docs synced from `stmpy` (`en` + `zh-cn` only) |
-| `/ja/tutorials/…`, `/es/tutorials/…` | Fall back to English with Starlight’s untranslated notice |
-| `/downloads/` (+ locales) | Studio installers from JSON manifests |
+| `/`, `/zh-cn/`, `/ja/`, `/es/` | Studio marketing home (custom Astro pages) |
+| `/downloads/` (+ locales) | Standalone downloads (not inside Starlight sidebar) |
+| `/tutorials/…` (+ locales) | Docs synced from `stmpy` (`en` + `zh-cn`; ja/es fall back to EN) |
 
-Default locale is **English** at the site root (no browser auto-detect). Use the language switcher in the header.
+Default locale is **English** at `/` (no browser auto-detect). Use the language switcher in the header.
+
+## Home demo (Studio workflow)
+
+The hero includes a **write → build → flash success** demo.
+
+**Current route: CSS/JS mockup** styled like real StmPy Studio (`src/components/StudioDemo.astro`): types the blink example, runs Build (shows `.hex` output), then shows a designed Flash success using the same probe-rs-style lines Studio prints. No board is required; the flash step is not a live probe session.
+
+To swap in a **real recording** later (e.g. once a board is connected):
+
+1. Put files in `public/media/studio-demo/`:
+   - `studio-demo.webm` (preferred) and/or `studio-demo.mp4`
+   - optional `poster.png`
+2. Keep the clip small (ideally &lt; 3 MB), muted, looping.
+3. Capture **typing + Build success**; only include Flash if it actually succeeds on hardware. Do not publish a failed flash.
+4. Redeploy. The page prefers video when those files return HTTP 200; otherwise it keeps the mockup.
+
+See `public/media/studio-demo/README.md`.
 
 ## Develop
 
@@ -52,7 +68,7 @@ Commit the result when you bump the docs pin. Tutorials follow **stmpy** tags (c
 - `src/data/downloads/latest.json` — current stable version pointer
 - `src/data/downloads/<version>.json` — assets named `stmpy-studio-{version}-{platform}{ext}`
 
-Asset URLs are `${DOWNLOAD_BASE_URL}/${version}/${filename}`. Swap hosts by changing the one config constant (and updating committed manifests if you bake absolute URLs later).
+Asset URLs are `${DOWNLOAD_BASE_URL}/${version}/${filename}`.
 
 v1 is **Studio only** (no CLI section).
 
@@ -60,28 +76,21 @@ v1 is **Studio only** (no CLI section).
 
 GitHub Actions (`.github/workflows/deploy.yml`):
 
-- **PR:** build + link check + Wrangler **preview** deploy (`--branch=<pr-branch>`)
-- **`master`:** build + production deploy to Pages project `stmpy-org`
+- **PR:** build + link check + Wrangler **preview** deploy
+- **`master`:** production deploy to Pages project `stmpy-org`
 
-### Secrets (GitHub → Settings → Secrets and variables → Actions)
+### Secrets
 
 | Secret | Purpose |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Token with **Account → Cloudflare Pages → Edit** (and read) |
+| `CLOUDFLARE_API_TOKEN` | Account → Cloudflare Pages → Edit |
 | `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
 
 ### One-time Cloudflare setup
 
-1. Create a **Pages** project named `stmpy-org` (direct upload is fine; CI deploys the `dist/` artifact).
-2. Attach custom domain **`stmpy.org`** to the project.
-3. Add a Cloudflare redirect rule / Bulk Redirect: `www.stmpy.org/*` → `https://stmpy.org/$1` (301).
-4. Create R2 bucket + public hostname **`dl.stmpy.org`**, layout `studio/<version>/…` and `studio/latest.json` (placeholder objects OK before real installers exist).
-
-Local deploy smoke test (optional):
-
-```bash
-npx wrangler pages deploy dist --project-name=stmpy-org
-```
+1. Pages project **`stmpy-org`**
+2. Custom domain **`stmpy.org`**; redirect **www → apex**
+3. R2 + **`dl.stmpy.org`** under `studio/<version>/…`
 
 ## License
 

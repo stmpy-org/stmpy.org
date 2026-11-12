@@ -1,0 +1,18 @@
+---
+import MarketingLayout from '../layouts/MarketingLayout.astro';
+import DownloadsPage from '../components/DownloadsPage.astro';
+import { homeCopy } from '../data/home';
+import { ui } from '../data/ui';
+
+const t = homeCopy('en');
+const d = ui('en');
+---
+
+<MarketingLayout
+	locale="en"
+	title={`${d.downloadHeading} · StmPy Studio`}
+	description={d.downloadLead}
+	active="downloads"
+>
+	<DownloadsPage locale="en" />
+</MarketingLayout>
