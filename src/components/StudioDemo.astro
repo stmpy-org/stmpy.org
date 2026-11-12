@@ -6,7 +6,6 @@
  */
 const videoWebm = '/media/studio-demo/studio-demo.webm';
 const videoMp4 = '/media/studio-demo/studio-demo.mp4';
-const poster = '/media/studio-demo/poster.png';
 ---
 
 <figure class="studio-demo">
@@ -18,8 +17,7 @@ const poster = '/media/studio-demo/poster.png';
 			playsinline
 			autoplay
 			loop
-			preload="metadata"
-			poster={poster}
+			preload="none"
 			hidden
 		>
 			<source data-src-webm={videoWebm} type="video/webm" />
@@ -177,6 +175,8 @@ def main():
 				s.type = 'video/mp4';
 				video.appendChild(s);
 			}
+			const posterOk = await probe('/media/studio-demo/poster.png');
+			if (posterOk) video.setAttribute('poster', '/media/studio-demo/poster.png');
 			video.hidden = false;
 			if (mockup) mockup.hidden = true;
 			video.load();
@@ -184,7 +184,17 @@ def main():
 			return;
 		}
 
-		if (mockup) runMockup(mockup);
+		// No recording: keep video out of layout; show mockup only.
+		if (video) {
+			video.hidden = true;
+			video.removeAttribute('poster');
+			video.removeAttribute('src');
+			video.load?.();
+		}
+		if (mockup) {
+			mockup.hidden = false;
+			runMockup(mockup);
+		}
 	});
 </script>
 
@@ -202,13 +212,20 @@ def main():
 	:global(:root[data-theme='light']) .studio-demo__stage {
 		border-color: var(--color-hairline);
 	}
-	.studio-demo__video {
+	/* [hidden] must win — bare display:block was painting an empty 16:10 frame above the mockup */
+	.studio-demo__video[hidden] {
+		display: none !important;
+	}
+	.studio-demo__video:not([hidden]) {
 		display: block;
 		width: 100%;
 		height: auto;
 		aspect-ratio: 16 / 10;
 		object-fit: cover;
 		background: #1e1e1e;
+	}
+	.studio-window[hidden] {
+		display: none !important;
 	}
 	.studio-demo__caption {
 		margin-top: var(--space-sm);
