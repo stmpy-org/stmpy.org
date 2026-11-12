@@ -28,7 +28,10 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 		</div>
 	</div>
 	<div class="mkt-footer__bottom">
-		<span class="mkt-footer__mark"><span class="brand-dot" aria-hidden="true"></span> StmPy Studio</span>
+		<span class="mkt-footer__mark"
+			><img class="brand-logo brand-logo--sm" src="/brand/logo.png" width="18" height="18" alt="" decoding="async" />
+			StmPy Studio</span
+		>
 		<span class="mkt-footer__meta">stmpy.org · Apache-2.0</span>
 	</div>
 </footer>
@@ -84,6 +87,12 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 		align-items: center;
 		gap: var(--space-xs);
 		font-size: var(--type-caption);
+	}
+	.brand-logo {
+		width: 18px;
+		height: 18px;
+		display: block;
+		flex-shrink: 0;
 	}
 	.mkt-footer__meta {
 		font-family: var(--font-mono);

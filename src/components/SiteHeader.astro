@@ -33,7 +33,7 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 
 <header class="mkt-header">
 	<a class="mkt-brand" href={homeHref}>
-		<span class="brand-dot" aria-hidden="true"></span>
+		<img class="brand-logo" src="/brand/logo.png" width="28" height="28" alt="" decoding="async" />
 		<span>StmPy Studio</span>
 	</a>
 	<nav class="mkt-nav" aria-label="Primary">
@@ -130,6 +130,12 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		font-weight: 500;
 		font-size: var(--type-body);
 		letter-spacing: -0.01em;
+		flex-shrink: 0;
+	}
+	.brand-logo {
+		width: 28px;
+		height: 28px;
+		display: block;
 		flex-shrink: 0;
 	}
 	.mkt-nav {

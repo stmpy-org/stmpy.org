@@ -3,6 +3,11 @@ import Default from '@astrojs/starlight/components/Head.astro';
 ---
 
 <Default><slot /></Default>
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta property="og:image" content="https://stmpy.org/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://stmpy.org/og-image.png" />
 <script is:inline>
 	(function () {
 		try {
