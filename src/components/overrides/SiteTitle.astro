@@ -1,0 +1,18 @@
+---
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<span class="site-title-wrap sl-flex">
+	<span class="brand-dot" aria-hidden="true"></span>
+	<Default><slot /></Default>
+</span>
+
+<style>
+	.site-title-wrap {
+		align-items: center;
+		gap: 0;
+	}
+	.site-title-wrap :global(.site-title) {
+		margin-inline-start: 0.5rem;
+	}
+</style>

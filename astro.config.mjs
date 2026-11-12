@@ -88,6 +88,11 @@ export default defineConfig({
 				},
 				...tutorialSidebar,
 			],
+			components: {
+				Head: './src/components/overrides/Head.astro',
+				SiteTitle: './src/components/overrides/SiteTitle.astro',
+				Hero: './src/components/overrides/Hero.astro',
+			},
 		}),
 	],
 });

@@ -15,18 +15,30 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
-
 StmPy Studio 负责编辑、编译和烧录。StmPy 把 Python 语法的程序翻译成基于 STM32 HAL 的 C，跑起来和手写 C 一样快，芯片上也不需要解释器。
 
-<CardGrid>
-	<Card title="编辑器与语言服务" icon="pencil">
-		Monaco 补全、悬停和诊断；引脚参数会列出当前芯片可用引脚。
-	</Card>
-	<Card title="一键编译与烧录" icon="rocket">
-		内置 stmpy、arm-none-eabi-gcc 和 probe-rs，不用再找工具链。
-	</Card>
-	<Card title="时钟树与工程向导" icon="setting">
-		新建工程选芯片和时钟，几分钟就能写出闪灯程序。
-	</Card>
-</CardGrid>
+<div class="feature-band">
+<p class="feature-band__eyebrow">你能得到什么</p>
+<ul class="feature-grid">
+<li class="feature-card">
+<p class="feature-card__eyebrow">编辑器</p>
+<h3 class="feature-card__title">编辑器与语言服务</h3>
+<p class="feature-card__body">Monaco 补全、悬停和诊断；引脚参数会列出当前芯片可用引脚。</p>
+</li>
+<li class="feature-card feature-card--brand">
+<p class="feature-card__eyebrow">工具链</p>
+<h3 class="feature-card__title">一键编译与烧录</h3>
+<p class="feature-card__body">内置 stmpy、arm-none-eabi-gcc 和 probe-rs，不用再找工具链。</p>
+</li>
+<li class="feature-card">
+<p class="feature-card__eyebrow">工程</p>
+<h3 class="feature-card__title">时钟树与向导</h3>
+<p class="feature-card__body">新建工程选芯片和时钟，几分钟就能写出闪灯程序。</p>
+</li>
+</ul>
+</div>
+
+<div class="site-footer-note">
+<span class="site-footer-note__mark"><span class="brand-dot" aria-hidden="true"></span> StmPy Studio</span>
+<span class="site-footer-note__meta">stmpy.org</span>
+</div>

@@ -15,20 +15,32 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
-
 StmPy Studio edita, compila y flashea. StmPy traduce tu programa a C sobre el HAL de STM32, tan rápido como C a mano — sin intérprete en el chip.
 
 Los tutoriales existen solo en inglés y chino. En español verás el contenido en inglés con el aviso de Starlight.
 
-<CardGrid>
-	<Card title="Editor y language server" icon="pencil">
-		Monaco con completado, hover y diagnósticos; pines del chip en los argumentos.
-	</Card>
-	<Card title="Compilar y flashear en un clic" icon="rocket">
-		Incluye stmpy, arm-none-eabi-gcc y probe-rs.
-	</Card>
-	<Card title="Árbol de reloj y asistente" icon="setting">
-		Crea un proyecto, elige chip y relojes, y en minutos tienes un LED parpadeando.
-	</Card>
-</CardGrid>
+<div class="feature-band">
+<p class="feature-band__eyebrow">Qué incluye</p>
+<ul class="feature-grid">
+<li class="feature-card">
+<p class="feature-card__eyebrow">Editor</p>
+<h3 class="feature-card__title">Editor y language server</h3>
+<p class="feature-card__body">Monaco con completado, hover y diagnósticos; pines del chip en los argumentos.</p>
+</li>
+<li class="feature-card feature-card--brand">
+<p class="feature-card__eyebrow">Toolchain</p>
+<h3 class="feature-card__title">Compilar y flashear en un clic</h3>
+<p class="feature-card__body">Incluye stmpy, arm-none-eabi-gcc y probe-rs.</p>
+</li>
+<li class="feature-card">
+<p class="feature-card__eyebrow">Proyecto</p>
+<h3 class="feature-card__title">Árbol de reloj y asistente</h3>
+<p class="feature-card__body">Crea un proyecto, elige chip y relojes, y en minutos tienes un LED parpadeando.</p>
+</li>
+</ul>
+</div>
+
+<div class="site-footer-note">
+<span class="site-footer-note__mark"><span class="brand-dot" aria-hidden="true"></span> StmPy Studio</span>
+<span class="site-footer-note__meta">stmpy.org</span>
+</div>

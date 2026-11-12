@@ -52,8 +52,9 @@ const linuxHint = hint('linux-appimage');
 
 <section class="dl">
 	<header class="dl__head">
+		<p class="dl__eyebrow">STMPY STUDIO</p>
 		<h1>{t.downloadHeading}</h1>
-		<p>{t.downloadLead}</p>
+		<p class="dl__lead">{t.downloadLead}</p>
 		<p class="dl__meta">
 			<span>{t.versionLabel}: <strong>{manifest.version}</strong></span>
 			{
@@ -76,9 +77,9 @@ const linuxHint = hint('linux-appimage');
 
 	<ul class="dl__list">
 		{
-			manifest.assets.map((asset) => (
+			manifest.assets.map((asset, i) => (
 				<li>
-					<a class="dl__btn" href={assetUrl(asset.filename)}>
+					<a class:list={['dl__btn', i === 0 && 'dl__btn--primary']} href={assetUrl(asset.filename)}>
 						<span class="dl__label">{labelFor(asset)}</span>
 						<code class="dl__file">{asset.filename}</code>
 					</a>
@@ -108,63 +109,123 @@ const linuxHint = hint('linux-appimage');
 <style>
 	.dl {
 		display: grid;
-		gap: 1.5rem;
-		max-width: 42rem;
+		gap: var(--space-xl);
+		max-width: 40rem;
+	}
+	.dl__eyebrow {
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-eyebrow);
+		color: var(--color-mute);
+		margin: 0 0 var(--space-sm);
+		letter-spacing: 0.02em;
 	}
 	.dl__head h1 {
-		font-size: var(--sl-text-3xl);
-		margin: 0 0 0.5rem;
+		font-size: clamp(2rem, 5vw, var(--type-display-sm));
+		font-weight: 400;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin: 0 0 var(--space-sm);
+		color: var(--sl-color-white);
 	}
-	.dl__head p {
-		margin: 0.35rem 0;
-		color: var(--sl-color-gray-2);
+	.dl__lead {
+		margin: 0;
+		font-size: var(--type-subtitle);
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--color-ash);
+	}
+	:global(:root[data-theme='light']) .dl__lead {
+		color: var(--color-slate);
 	}
 	.dl__meta {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0.75rem 1.25rem;
-		font-size: var(--sl-text-sm);
+		gap: var(--space-sm) var(--space-lg);
+		font-size: var(--type-caption);
+		margin: var(--space-md) 0 0;
+		color: var(--color-mute);
+	}
+	.dl__meta a {
+		color: var(--sl-color-text-accent);
+	}
+	.dl__meta strong {
+		color: var(--sl-color-white);
+		font-weight: 500;
 	}
 	.dl__note {
-		font-size: var(--sl-text-sm);
-		color: var(--sl-color-gray-3);
+		font-size: var(--type-meta);
+		color: var(--color-mute);
+		margin: var(--space-sm) 0 0;
 	}
 	.dl__list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 		display: grid;
-		gap: 0.75rem;
+		gap: var(--space-sm);
 	}
 	.dl__btn {
 		display: grid;
-		gap: 0.25rem;
-		padding: 0.9rem 1rem;
-		border: 1px solid var(--sl-color-gray-5);
-		border-radius: 0.35rem;
+		gap: var(--space-xxs);
+		padding: var(--space-md) var(--space-lg);
+		border: 1px solid var(--color-hairline-soft);
+		border-radius: var(--radius-marketing);
 		text-decoration: none;
 		color: inherit;
-		background: color-mix(in srgb, var(--sl-color-gray-6) 55%, transparent);
+		background: var(--color-canvas-soft);
 		transition: border-color 0.15s ease, background 0.15s ease;
 	}
+	:global(:root[data-theme='light']) .dl__btn {
+		background: var(--color-canvas-light);
+		border-color: var(--color-hairline);
+		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	}
 	.dl__btn:hover {
-		border-color: var(--sl-color-accent);
-		background: color-mix(in srgb, var(--sl-color-accent-low) 40%, transparent);
+		border-color: var(--color-ash);
+	}
+	.dl__btn--primary {
+		background: var(--color-brand);
+		border-color: transparent;
+		color: var(--color-ink);
+	}
+	.dl__btn--primary:hover {
+		border-color: transparent;
+		filter: brightness(1.04);
+	}
+	.dl__btn--primary .dl__label {
+		color: var(--color-ink);
+	}
+	.dl__btn--primary .dl__file {
+		color: var(--color-ink-soft);
+		background: transparent;
+		opacity: 0.9;
 	}
 	.dl__label {
-		font-weight: 600;
+		font-size: var(--type-body);
+		font-weight: 500;
+		letter-spacing: -0.01em;
 	}
 	.dl__file {
-		font-size: var(--sl-text-xs);
-		opacity: 0.85;
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-micro);
+		color: var(--color-mute);
+		background: transparent;
+		padding: 0;
+		border-radius: 0;
 	}
 	.dl__hint {
-		padding: 0.85rem 1rem;
-		border-left: 3px solid var(--sl-color-accent);
-		background: color-mix(in srgb, var(--sl-color-accent-low) 35%, transparent);
+		padding: var(--space-md);
+		border-radius: var(--radius-app-lg);
+		background: var(--color-surface-blue-bg);
+		color: var(--color-ink);
+	}
+	.dl__hint strong {
+		font-size: var(--type-caption-tight, 13px);
+		font-weight: 500;
 	}
 	.dl__hint p {
-		margin: 0.35rem 0 0;
-		font-size: var(--sl-text-sm);
+		margin: var(--space-xxs) 0 0;
+		font-size: var(--type-body-sm);
+		line-height: 1.5;
 	}
 </style>

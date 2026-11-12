@@ -1,0 +1,15 @@
+---
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default><slot /></Default>
+<script is:inline>
+	(function () {
+		try {
+			var key = 'starlight-theme';
+			if (!localStorage.getItem(key)) {
+				localStorage.setItem(key, 'dark');
+			}
+		} catch (_) {}
+	})();
+</script>
