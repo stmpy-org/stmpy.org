@@ -27,7 +27,7 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 </section>
 
 <section class="band">
-	<div class="wrap narrow">
+	<div class="wrap">
 		<p class="eye">{t.whatEyebrow}</p>
 		<h2 class="h-md">{t.whatTitle}</h2>
 		<p class="body">{t.whatBody}</p>
@@ -84,7 +84,7 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 </section>
 
 <section class="band">
-	<div class="wrap narrow">
+	<div class="wrap">
 		<p class="eye">{t.chipsEyebrow}</p>
 		<h2 class="h-md">{t.chipsTitle}</h2>
 		<p class="body">{t.chipsBody}</p>
@@ -117,7 +117,7 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 </section>
 
 <section class="band band--cta">
-	<div class="wrap narrow">
+	<div class="wrap">
 		<p class="eye">{t.ctaBandEyebrow}</p>
 		<h2 class="h-md">{t.ctaBandTitle}</h2>
 		<p class="body">{t.ctaBandBody}</p>
@@ -126,7 +126,7 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 </section>
 
 <section class="band">
-	<div class="wrap narrow">
+	<div class="wrap">
 		<p class="eye">{t.faqEyebrow}</p>
 		<h2 class="h-md">{t.faqTitle}</h2>
 		<div class="faq">
@@ -172,9 +172,6 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 	.wrap {
 		width: min(1100px, calc(100% - 2 * var(--space-lg)));
 		margin-inline: auto;
-	}
-	.wrap.narrow {
-		width: min(720px, calc(100% - 2 * var(--space-lg)));
 	}
 	.wrap.split {
 		display: grid;
