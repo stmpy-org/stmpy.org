@@ -66,13 +66,8 @@ export default defineConfig({
 				ja: { label: '日本語', lang: 'ja' },
 				es: { label: 'Español', lang: 'es' },
 			},
-			social: [
-				{
-					icon: 'github',
-					label: 'StmPy Studio',
-					href: 'https://github.com/stmpy-org/stmpy-studio',
-				},
-			],
+			// No header social icons — GitHub links live in the footer / docs copy.
+			social: [],
 			editLink: {
 				baseUrl: 'https://github.com/stmpy-org/stmpy.org/edit/master/',
 			},

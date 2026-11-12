@@ -4,57 +4,69 @@ import type { UiLocale } from '../data/ui';
 interface Props {
 	locale: UiLocale;
 	active?: 'home' | 'downloads' | 'tutorials';
+	/** When true, render as a div for nesting inside Starlight's <header>. */
+	embedded?: boolean;
+	/** Show a compact search control (tutorials only). */
+	showSearch?: boolean;
 }
 
-const { locale, active } = Astro.props;
+const { locale, active = 'home', embedded = false, showSearch = false } = Astro.props;
+const Tag = embedded ? 'div' : 'header';
+const pathname = Astro.url.pathname;
+
 const prefix = locale === 'en' ? '' : `/${locale}`;
 const homeHref = prefix || '/';
 const downloadsHref = `${prefix}/downloads/`;
 const tutorialsHref = `${prefix}/tutorials/`;
 
 const nav = {
-	en: { studio: 'Studio', tutorials: 'Tutorials', downloads: 'Downloads' },
-	'zh-cn': { studio: 'Studio', tutorials: '教程', downloads: '下载' },
-	ja: { studio: 'Studio', tutorials: 'チュートリアル', downloads: 'ダウンロード' },
-	es: { studio: 'Studio', tutorials: 'Tutoriales', downloads: 'Descargas' },
+	en: { home: 'Home', tutorials: 'Tutorials', downloads: 'Downloads' },
+	'zh-cn': { home: '首页', tutorials: '教程', downloads: '下载' },
+	ja: { home: 'ホーム', tutorials: 'チュートリアル', downloads: 'ダウンロード' },
+	es: { home: 'Inicio', tutorials: 'Tutoriales', downloads: 'Descargas' },
 }[locale];
 
-const locales: { id: UiLocale; label: string; href: string }[] = [
-	{ id: 'en', label: 'English', href: active === 'downloads' ? '/downloads/' : '/' },
-	{
-		id: 'zh-cn',
-		label: '简体中文',
-		href: active === 'downloads' ? '/zh-cn/downloads/' : '/zh-cn/',
-	},
-	{ id: 'ja', label: '日本語', href: active === 'downloads' ? '/ja/downloads/' : '/ja/' },
-	{ id: 'es', label: 'Español', href: active === 'downloads' ? '/es/downloads/' : '/es/' },
+const localeMeta: { id: UiLocale; label: string }[] = [
+	{ id: 'en', label: 'English' },
+	{ id: 'zh-cn', label: '简体中文' },
+	{ id: 'ja', label: '日本語' },
+	{ id: 'es', label: 'Español' },
 ];
+
+function hrefForLocale(id: UiLocale): string {
+	const p = id === 'en' ? '' : `/${id}`;
+	const stripped = pathname.replace(/^\/(zh-cn|ja|es)(?=\/|$)/, '') || '/';
+	if (active === 'downloads' || stripped.startsWith('/downloads')) {
+		return `${p}/downloads/` || '/downloads/';
+	}
+	if (active === 'tutorials' || stripped.startsWith('/tutorials')) {
+		const rest = stripped.startsWith('/tutorials') ? stripped : '/tutorials/';
+		return `${p}${rest}`;
+	}
+	return p || '/';
+}
+
+const locales = localeMeta.map((l) => ({ ...l, href: hrefForLocale(l.id) }));
 ---
 
-<header class="mkt-header">
+<Tag class:list={['mkt-header', { 'mkt-header--embedded': embedded }]}>
 	<a class="mkt-brand" href={homeHref}>
 		<img class="brand-logo" src="/brand/logo.png" width="28" height="28" alt="" decoding="async" />
-		<span>StmPy Studio</span>
+		<span class="mkt-brand__text">StmPy Studio</span>
 	</a>
 	<nav class="mkt-nav" aria-label="Primary">
-		<a class:list={[{ 'is-active': active === 'home' }]} href={homeHref}>{nav.studio}</a>
-		<a class:list={[{ 'is-active': active === 'tutorials' }]} href={tutorialsHref}>{nav.tutorials}</a>
+		<a class:list={[{ 'is-active': active === 'home' }]} href={homeHref}>{nav.home}</a>
 		<a class:list={[{ 'is-active': active === 'downloads' }]} href={downloadsHref}>{nav.downloads}</a>
+		<a class:list={[{ 'is-active': active === 'tutorials' }]} href={tutorialsHref}>{nav.tutorials}</a>
 	</nav>
 	<div class="mkt-tools">
-		<a
-			class="mkt-github"
-			href="https://github.com/stmpy-org/stmpy-studio"
-			rel="noopener noreferrer"
-			aria-label="GitHub"
-		>
-			<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"
-				><path
-					fill="currentColor"
-					d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.08 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3Z"
-				></path></svg
-			>
-		</a>
+		{
+			showSearch && (
+				<div class="mkt-search">
+					<slot name="search" />
+				</div>
+			)
+		}
 		<label class="mkt-select">
 			<span class="sr-only">Theme</span>
 			<select data-theme-select>
@@ -76,14 +88,19 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 			</select>
 		</label>
 	</div>
-</header>
+</Tag>
 
 <script is:inline>
 	(function () {
 		var key = 'starlight-theme';
 		var root = document.documentElement;
 		function apply(v) {
-			var theme = v === 'auto' ? (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : v;
+			var theme =
+				v === 'auto'
+					? matchMedia('(prefers-color-scheme: light)').matches
+						? 'light'
+						: 'dark'
+					: v;
 			root.dataset.theme = theme === 'light' ? 'light' : 'dark';
 		}
 		try {
@@ -107,7 +124,7 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 	.mkt-header {
 		display: flex;
 		align-items: center;
-		gap: var(--space-lg);
+		gap: var(--space-md);
 		height: 64px;
 		padding: 0 var(--space-lg);
 		background: var(--color-canvas);
@@ -115,6 +132,12 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		position: sticky;
 		top: 0;
 		z-index: 20;
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.mkt-header--embedded {
+		position: relative;
+		top: auto;
 	}
 	:global(:root[data-theme='light']) .mkt-header {
 		background: var(--color-canvas-light);
@@ -139,14 +162,12 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		flex-shrink: 0;
 	}
 	.mkt-nav {
-		display: none;
-		gap: var(--space-md);
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--space-sm) var(--space-md);
 		margin-inline: auto;
-	}
-	@media (min-width: 720px) {
-		.mkt-nav {
-			display: flex;
-		}
+		min-width: 0;
 	}
 	.mkt-nav a {
 		color: inherit;
@@ -155,6 +176,7 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		font-weight: 500;
 		opacity: 0.75;
 		padding: var(--space-xs) 0;
+		white-space: nowrap;
 	}
 	.mkt-nav a:hover,
 	.mkt-nav a.is-active {
@@ -164,12 +186,16 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		display: flex;
 		align-items: center;
 		gap: var(--space-sm);
-		margin-inline-start: auto;
+		margin-inline-start: 0;
+		flex-shrink: 0;
 	}
-	.mkt-github {
-		color: inherit;
+	.mkt-search {
 		display: flex;
-		opacity: 0.85;
+		align-items: center;
+		max-width: 180px;
+	}
+	.mkt-search :global(site-search) {
+		display: block;
 	}
 	.mkt-select select {
 		appearance: none;
@@ -194,5 +220,23 @@ const locales: { id: UiLocale; label: string; href: string }[] = [
 		overflow: hidden;
 		clip: rect(0, 0, 0, 0);
 		border: 0;
+	}
+	@media (max-width: 720px) {
+		.mkt-header {
+			gap: var(--space-sm);
+			padding: 0 var(--space-md);
+		}
+		.mkt-nav {
+			gap: var(--space-sm);
+		}
+		.mkt-nav a {
+			font-size: var(--type-caption);
+		}
+		.mkt-brand__text {
+			display: none;
+		}
+		.mkt-search {
+			display: none;
+		}
 	}
 </style>

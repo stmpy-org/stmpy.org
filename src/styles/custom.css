@@ -224,48 +224,23 @@ h6,
 	text-underline-offset: 0.18em;
 }
 
-/* —— Header / nav-bar-dark —— */
+/* —— Header: shared SiteHeader paints the bar; keep Starlight shell neutral —— */
 header.header {
-	background: var(--color-canvas) !important;
+	background: transparent !important;
 	border-bottom: none !important;
 	box-shadow: none !important;
+	padding: 0 !important;
+	height: auto !important;
+	min-height: 64px;
 }
 
-:root[data-theme='light'] header.header {
-	background: var(--color-canvas-light) !important;
-	border-bottom: 1px solid var(--color-hairline) !important;
-}
-
-.site-title {
-	gap: var(--space-xs) !important;
-	font-size: var(--type-body) !important;
-	font-weight: 500 !important;
-	letter-spacing: -0.01em;
-	color: var(--sl-color-white) !important;
-}
-
-.brand-dot {
-	width: 12px;
-	height: 12px;
-	border-radius: var(--radius-full);
-	background: var(--color-brand);
-	flex-shrink: 0;
-}
-
-@media (max-width: 480px) {
-	.brand-dot {
-		width: 10px;
-		height: 10px;
-	}
-}
-
-/* Search input → text-input-dark / light */
+/* Search input → text-input-dark / light (tutorials slot inside SiteHeader) */
 site-search button[data-open-modal] {
 	border-radius: var(--radius-app-xs) !important;
 	border: 1px solid var(--color-hairline-soft) !important;
 	background: var(--color-canvas) !important;
 	color: var(--color-ash) !important;
-	height: 36px;
+	height: 32px;
 	font-size: var(--type-caption);
 }
 
@@ -273,23 +248,6 @@ site-search button[data-open-modal] {
 	border-color: var(--color-hairline) !important;
 	background: var(--color-canvas-light) !important;
 	color: var(--color-mute) !important;
-}
-
-/* Language / theme selects */
-starlight-lang-select,
-starlight-theme-select {
-	font-size: var(--type-caption);
-}
-
-starlight-lang-select select,
-starlight-theme-select select {
-	border-radius: var(--radius-app-md);
-	color: var(--color-ash);
-}
-
-:root[data-theme='light'] starlight-lang-select select,
-:root[data-theme='light'] starlight-theme-select select {
-	color: var(--color-ink-soft);
 }
 
 /* Sidebar */

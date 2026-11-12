@@ -1,89 +1,34 @@
 ---
 import config from 'virtual:starlight/user-config';
-import LanguageSelect from 'virtual:starlight/components/LanguageSelect';
 import Search from 'virtual:starlight/components/Search';
-import SiteTitle from 'virtual:starlight/components/SiteTitle';
-import SocialIcons from 'virtual:starlight/components/SocialIcons';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import SiteHeader from '../SiteHeader.astro';
+import type { UiLocale } from '../../data/ui';
 
 const shouldRenderSearch =
 	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
 
-const locale = Astro.locals.starlightRoute.locale ?? 'root';
-const prefix = locale === 'root' ? '' : `/${locale}`;
-const downloadsHref = `${prefix}/downloads/`;
-const homeHref = prefix || '/';
-
-const downloadLabels: Record<string, string> = {
-	root: 'Downloads',
-	'zh-cn': '下载',
-	ja: 'ダウンロード',
-	es: 'Descargas',
-};
-const homeLabels: Record<string, string> = {
-	root: 'Studio',
-	'zh-cn': 'Studio',
-	ja: 'Studio',
-	es: 'Studio',
-};
+const slLocale = Astro.locals.starlightRoute.locale ?? 'root';
+const locale: UiLocale = slLocale === 'root' ? 'en' : (slLocale as UiLocale);
 ---
 
-<div class="header">
-	<div class="title-wrapper sl-flex">
-		<SiteTitle />
-	</div>
-	<nav class="docs-extra-nav sl-hidden md:sl-flex" aria-label="Site">
-		<a href={homeHref}>{homeLabels[locale] ?? 'Studio'}</a>
-		<a href={downloadsHref}>{downloadLabels[locale] ?? 'Downloads'}</a>
-	</nav>
-	<div class="sl-flex print:hidden">
-		{shouldRenderSearch && <Search />}
-	</div>
-	<div class="sl-hidden md:sl-flex print:hidden right-group">
-		<div class="sl-flex social-icons">
-			<SocialIcons />
-		</div>
-		<ThemeSelect />
-		<LanguageSelect />
-	</div>
-</div>
+<SiteHeader locale={locale} active="tutorials" embedded showSearch={shouldRenderSearch}>
+	{shouldRenderSearch && <Search slot="search" />}
+</SiteHeader>
 
-<style>
-	@layer starlight.core {
-		.header {
-			display: flex;
-			gap: var(--sl-nav-gap);
-			justify-content: space-between;
-			align-items: center;
-			height: 100%;
-		}
-		.title-wrapper {
-			overflow: hidden;
-		}
-		.right-group,
-		.social-icons {
-			gap: 1rem;
-			align-items: center;
-		}
-		.social-icons::after {
-			content: '';
-			height: 2rem;
-			border-inline-end: 1px solid var(--sl-color-gray-5);
-		}
+<style is:global>
+	/* Let the shared SiteHeader paint the bar; collapse Starlight chrome around it. */
+	header.header {
+		padding: 0 !important;
+		height: auto !important;
+		min-height: 64px;
+		background: transparent !important;
+		border-bottom: none !important;
+		box-shadow: none !important;
 	}
-	.docs-extra-nav {
-		gap: 1rem;
-		align-items: center;
-		margin-inline-end: auto;
+	header.header .mkt-header {
+		border-bottom: none;
 	}
-	.docs-extra-nav a {
-		color: var(--sl-color-white);
-		text-decoration: none;
-		font-size: var(--sl-text-sm);
-		font-weight: 500;
-		opacity: 0.8;
-	}
-	.docs-extra-nav a:hover {
-		opacity: 1;
+	:root[data-theme='light'] header.header .mkt-header {
+		border-bottom: 1px solid var(--color-hairline);
 	}
 </style>

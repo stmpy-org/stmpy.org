@@ -12,9 +12,21 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 	<div class="mkt-footer__grid">
 		<div>
 			<p class="mkt-footer__eye">Product</p>
-			<a href={prefix || '/'}>Studio</a>
-			<a href={`${prefix}/downloads/`}>Downloads</a>
-			<a href={`${prefix}/tutorials/`}>Tutorials</a>
+			<a href={prefix || '/'}>
+				{
+					{ en: 'Home', 'zh-cn': '首页', ja: 'ホーム', es: 'Inicio' }[locale]
+				}
+			</a>
+			<a href={`${prefix}/downloads/`}>
+				{
+					{ en: 'Downloads', 'zh-cn': '下载', ja: 'ダウンロード', es: 'Descargas' }[locale]
+				}
+			</a>
+			<a href={`${prefix}/tutorials/`}>
+				{
+					{ en: 'Tutorials', 'zh-cn': '教程', ja: 'チュートリアル', es: 'Tutoriales' }[locale]
+				}
+			</a>
 		</div>
 		<div>
 			<p class="mkt-footer__eye">Source</p>
