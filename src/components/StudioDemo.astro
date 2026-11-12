@@ -201,13 +201,20 @@ def main():
 <style>
 	.studio-demo {
 		margin: 0;
+		width: 100%;
+		max-width: 920px;
 	}
+	/* Fixed 16:10 frame — size never changes during the mockup loop */
 	.studio-demo__stage {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		height: auto;
 		border-radius: var(--radius-app-lg);
 		overflow: hidden;
 		border: 1px solid var(--color-hairline-soft);
 		background: #1e1e1e;
 		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+		position: relative;
 	}
 	:global(:root[data-theme='light']) .studio-demo__stage {
 		border-color: var(--color-hairline);
@@ -219,10 +226,11 @@ def main():
 	.studio-demo__video:not([hidden]) {
 		display: block;
 		width: 100%;
-		height: auto;
-		aspect-ratio: 16 / 10;
+		height: 100%;
 		object-fit: cover;
 		background: #1e1e1e;
+		position: absolute;
+		inset: 0;
 	}
 	.studio-window[hidden] {
 		display: none !important;
@@ -241,19 +249,30 @@ def main():
 		--s-text: #cccccc;
 		--s-dim: #8b8b8b;
 		--s-accent: #0e639c;
+		--s-chrome: 28px;
+		--s-toolbar: 40px;
+		--s-tab: 28px;
+		--s-term: 30%;
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 		font-size: 12.5px;
 		color: var(--s-text);
 		background: var(--s-bg);
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 	.studio-window__chrome {
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		height: 28px;
+		flex: 0 0 var(--s-chrome);
+		height: var(--s-chrome);
 		padding: 0 10px;
 		background: #2a2a2a;
 		border-bottom: 1px solid var(--s-border);
+		box-sizing: border-box;
 	}
 	.dot {
 		width: 9px;
@@ -277,16 +296,20 @@ def main():
 	.studio-app {
 		display: flex;
 		flex-direction: column;
-		min-height: 320px;
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
 	}
 	.studio-toolbar {
 		display: grid;
 		grid-template-columns: 1fr auto;
 		align-items: center;
-		height: 40px;
+		flex: 0 0 var(--s-toolbar);
+		height: var(--s-toolbar);
 		padding: 0 10px;
 		background: var(--s-bar);
 		border-bottom: 1px solid var(--s-border);
+		box-sizing: border-box;
 	}
 	.studio-toolbar__title {
 		display: flex;
@@ -339,15 +362,18 @@ def main():
 	}
 	.studio-main {
 		display: flex;
-		min-height: 180px;
-		flex: 1;
+		flex: 1 1 auto;
+		min-height: 0;
+		overflow: hidden;
 	}
 	.studio-side {
 		width: 120px;
-		flex-shrink: 0;
+		flex: 0 0 120px;
 		background: var(--s-side);
 		border-right: 1px solid var(--s-border);
 		padding: 8px;
+		overflow: hidden;
+		box-sizing: border-box;
 	}
 	.studio-side__label {
 		font-size: 10px;
@@ -366,14 +392,17 @@ def main():
 		color: var(--s-text);
 	}
 	.studio-editor {
-		flex: 1;
+		flex: 1 1 auto;
 		min-width: 0;
+		min-height: 0;
 		display: flex;
 		flex-direction: column;
 		background: var(--s-bg);
+		overflow: hidden;
 	}
 	.studio-tab {
-		height: 28px;
+		flex: 0 0 var(--s-tab);
+		height: var(--s-tab);
 		display: flex;
 		align-items: center;
 		padding: 0 12px;
@@ -381,17 +410,21 @@ def main():
 		background: #2d2d2d;
 		color: var(--s-text);
 		width: fit-content;
+		box-sizing: border-box;
 	}
 	.studio-code {
 		margin: 0;
 		padding: 12px 14px;
-		flex: 1;
+		flex: 1 1 auto;
+		min-height: 0;
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: 12px;
 		line-height: 1.45;
 		white-space: pre-wrap;
+		overflow: hidden;
 		color: #d4d4d4;
 		position: relative;
+		box-sizing: border-box;
 	}
 	.studio-caret {
 		display: inline-block;
@@ -409,35 +442,50 @@ def main():
 	.studio-term {
 		border-top: 1px solid var(--s-border);
 		background: #1a1a1a;
-		min-height: 96px;
-		max-height: 120px;
+		flex: 0 0 var(--s-term);
+		height: var(--s-term);
+		min-height: 0;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		box-sizing: border-box;
 	}
 	.studio-term__label {
+		flex: 0 0 22px;
+		height: 22px;
 		font-size: 10px;
 		color: var(--s-dim);
 		padding: 4px 10px;
 		border-bottom: 1px solid var(--s-border);
 		text-transform: uppercase;
 		letter-spacing: 0.04em;
+		box-sizing: border-box;
 	}
 	.studio-term__body {
 		margin: 0;
 		padding: 8px 10px;
+		flex: 1 1 auto;
+		min-height: 0;
 		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: 11px;
 		line-height: 1.4;
 		color: #9cdcfe;
 		white-space: pre-wrap;
-		min-height: 4.5em;
+		overflow: hidden;
+		box-sizing: border-box;
 	}
 
 	@media (max-width: 640px) {
 		.studio-side {
 			display: none;
 		}
-		.studio-app {
-			min-height: 280px;
+		.studio-window {
+			--s-term: 32%;
+			font-size: 11.5px;
+		}
+		.studio-code {
+			font-size: 11px;
+			padding: 10px 12px;
 		}
 	}
 </style>
