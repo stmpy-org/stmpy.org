@@ -4,7 +4,7 @@ Public website for **[StmPy Studio](https://github.com/stmpy-org/stmpy-studio)**
 
 - **Site:** https://stmpy.org (apex canonical; redirect `www` → apex in Cloudflare)
 - **Downloads host:** https://dl.stmpy.org (R2; base URL is `DOWNLOAD_BASE_URL` in `src/data/config.ts`)
-- **Stack:** Astro 5 + Starlight (tutorials) + custom marketing pages, static → Cloudflare Pages via Wrangler
+- **Stack:** Astro 5 + Starlight (tutorials) + custom marketing pages, static → Cloudflare Pages (Git integration)
 
 ## Pages
 
@@ -35,6 +35,8 @@ See `public/media/studio-demo/README.md`.
 
 ## Develop
 
+Requires **Node.js 22+** (see `.nvmrc`).
+
 ```bash
 npm ci
 npm run dev
@@ -46,9 +48,11 @@ npm run preview
 npm run check:links   # after build; scans dist/ for broken internal hrefs
 ```
 
+`npm run build` is self-contained: tutorials are already committed under `src/content/docs/` (and `vendor/stmpy-docs/`). You do **not** need a local `stmpy` checkout to build or deploy.
+
 ## Sync tutorials from stmpy
 
-`stmpy` stays private. Sync is **manual** from a local checkout at a git tag (uses `git archive`, not the dirty working tree):
+`stmpy` stays private. Sync is **manual** from a local checkout at a git tag (uses `git archive`, not the dirty working tree). It is **not** part of `npm run build`.
 
 ```bash
 npm run sync-docs -- --tag v0.0.2 --from ../stmpy
@@ -74,21 +78,23 @@ v1 is **Studio only** (no CLI section).
 
 ## Deploy (Cloudflare Pages)
 
-GitHub Actions (`.github/workflows/deploy.yml`):
+Use **Cloudflare Pages Git integration** (Cloudflare builds the site; no Wrangler GitHub Action).
 
-- **PR:** build + link check + Wrangler **preview** deploy
-- **`master`:** production deploy to Pages project `stmpy-org`
+### Recommended Pages settings
 
-### Secrets
-
-| Secret | Purpose |
+| Setting | Value |
 |---|---|
-| `CLOUDFLARE_API_TOKEN` | Account → Cloudflare Pages → Edit |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare account ID |
+| Framework preset | **Astro** |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Root directory | `/` (repo root) |
+| Environment variable | `NODE_VERSION` = `22` |
+
+Optional: `npm run check:links` locally or in a separate CI job after build; it is not required for Pages deploy.
 
 ### One-time Cloudflare setup
 
-1. Pages project **`stmpy-org`**
+1. Import this repo into Pages; production branch **`master`**
 2. Custom domain **`stmpy.org`**; redirect **www → apex**
 3. R2 + **`dl.stmpy.org`** under `studio/<version>/…`
 
