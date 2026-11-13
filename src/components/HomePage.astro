@@ -345,12 +345,20 @@ const prefix = locale === 'en' ? '' : `/${locale}`;
 		width: 28px;
 		height: 28px;
 		border-radius: var(--radius-full);
-		background: var(--color-brand);
-		color: var(--color-ink);
+		background: var(--color-ink);
+		color: var(--color-on-primary);
+		border: 1px solid transparent;
 		display: grid;
 		place-items: center;
 		font-size: var(--type-caption);
 		font-weight: 600;
+		box-sizing: border-box;
+	}
+	:global(:root[data-theme='dark']) .steps__n,
+	:global(:root:not([data-theme='light'])) .steps__n {
+		background: var(--color-canvas);
+		border-color: var(--color-ash);
+		color: var(--color-on-primary);
 	}
 	.chip-list {
 		margin: var(--space-md) 0 0;
