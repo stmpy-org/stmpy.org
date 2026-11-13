@@ -292,9 +292,11 @@ def main():
 		overflow: hidden;
 	}
 	.studio-toolbar {
-		display: grid;
-		grid-template-columns: 1fr auto;
+		display: flex;
+		flex-direction: row;
 		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
 		flex: 0 0 var(--s-toolbar);
 		height: var(--s-toolbar);
 		padding: 0 10px;
@@ -304,19 +306,19 @@ def main():
 	}
 	.studio-toolbar__title {
 		display: flex;
+		flex-direction: row;
 		align-items: center;
 		gap: 8px;
-		justify-self: center;
-		grid-column: 1 / -1;
+		min-width: 0;
 		pointer-events: none;
 	}
 	.studio-toolbar__actions {
-		grid-column: 2;
-		grid-row: 1;
 		display: flex;
+		flex-direction: row;
+		align-items: center;
 		gap: 2px;
-		justify-self: end;
-		z-index: 1;
+		flex-shrink: 0;
+		margin-inline-start: auto;
 	}
 	.studio-project {
 		font-weight: 600;
