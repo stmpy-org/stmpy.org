@@ -115,15 +115,7 @@ const platforms = [
 					</span>
 				)
 			}
-			{
-				manifest.notesUrl && (
-					<a href={manifest.notesUrl} rel="noopener noreferrer">
-						{t.releaseNotes}
-					</a>
-				)
-			}
 		</p>
-		<p class="dl__note">{t.placeholderNote}</p>
 	</header>
 
 	<ul class="dl-cards">
@@ -198,12 +190,6 @@ const platforms = [
 		color: var(--sl-color-white);
 		font-weight: 500;
 	}
-	.dl__note {
-		font-size: var(--type-meta);
-		color: var(--color-mute);
-		margin: var(--space-sm) 0 0;
-	}
-
 	.dl-cards {
 		list-style: none;
 		margin: 0;

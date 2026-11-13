@@ -79,9 +79,6 @@ const videoMp4 = '/media/studio-demo/studio-demo.mp4';
 			</div>
 		</div>
 	</div>
-	<figcaption class="studio-demo__caption">
-		<slot />
-	</figcaption>
 </figure>
 
 <script>
@@ -235,12 +232,6 @@ def main():
 	.studio-window[hidden] {
 		display: none !important;
 	}
-	.studio-demo__caption {
-		margin-top: var(--space-sm);
-		font-size: var(--type-caption);
-		color: var(--color-mute);
-	}
-
 	.studio-window {
 		--s-bg: #1e1e1e;
 		--s-side: #252526;

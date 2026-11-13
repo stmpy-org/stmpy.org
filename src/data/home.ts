@@ -8,7 +8,6 @@ export type HomeCopy = {
 	heroTagline: string;
 	ctaDownload: string;
 	ctaTutorials: string;
-	demoCaption: string;
 	whatEyebrow: string;
 	whatTitle: string;
 	whatBody: string;
@@ -58,8 +57,6 @@ const copy: Record<UiLocale, HomeCopy> = {
 		heroTagline: 'Program STM32 boards in Python syntax — from one desktop IDE.',
 		ctaDownload: 'Download Studio',
 		ctaTutorials: 'Read the tutorials',
-		demoCaption:
-			'Write a blink program, build a .hex, then flash with probe-rs — shown here as a Studio UI mockup.',
 		whatEyebrow: 'WHAT IT IS',
 		whatTitle: 'Python syntax, C on the chip',
 		whatBody:
@@ -171,7 +168,6 @@ const copy: Record<UiLocale, HomeCopy> = {
 		heroTagline: '用 Python 语法给 STM32 写固件——在一个桌面 IDE 里完成。',
 		ctaDownload: '下载 Studio',
 		ctaTutorials: '阅读教程',
-		demoCaption: '编写闪灯程序、编译出 .hex，再用 probe-rs 烧录——此处为 Studio 界面示意动画。',
 		whatEyebrow: '是什么',
 		whatTitle: 'Python 语法，芯片上跑 C',
 		whatBody:
@@ -271,8 +267,6 @@ const copy: Record<UiLocale, HomeCopy> = {
 		heroTagline: 'Python 構文で STM32 を書く——ひとつのデスクトップ IDE で。',
 		ctaDownload: 'Studio を入手',
 		ctaTutorials: 'チュートリアルを読む',
-		demoCaption:
-			'点滅プログラムを書き、.hex をビルドし、probe-rs で書き込む流れ——Studio UI のモックアップです。',
 		whatEyebrow: '概要',
 		whatTitle: 'Python 構文、チップ上は C',
 		whatBody:
@@ -372,8 +366,6 @@ const copy: Record<UiLocale, HomeCopy> = {
 		heroTagline: 'Programa STM32 con sintaxis Python — en un solo IDE de escritorio.',
 		ctaDownload: 'Descargar Studio',
 		ctaTutorials: 'Leer tutoriales',
-		demoCaption:
-			'Escribe un blink, genera el .hex y flashea con probe-rs — mockup de la UI de Studio.',
 		whatEyebrow: 'QUÉ ES',
 		whatTitle: 'Sintaxis Python, C en el chip',
 		whatBody:
