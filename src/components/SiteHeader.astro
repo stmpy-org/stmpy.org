@@ -1,0 +1,249 @@
+---
+import type { UiLocale } from '../data/ui';
+
+interface Props {
+	locale: UiLocale;
+	active?: 'home' | 'downloads' | 'tutorials';
+	/** When true, render as a div for nesting inside Starlight's <header>. */
+	embedded?: boolean;
+	/** Show a compact search control (tutorials only). */
+	showSearch?: boolean;
+}
+
+const { locale, active = 'home', embedded = false, showSearch = false } = Astro.props;
+const Tag = embedded ? 'div' : 'header';
+const pathname = Astro.url.pathname;
+
+const prefix = locale === 'en' ? '' : `/${locale}`;
+const homeHref = prefix || '/';
+const downloadsHref = `${prefix}/downloads/`;
+const tutorialsHref = `${prefix}/tutorials/`;
+
+const nav = {
+	en: { home: 'Home', tutorials: 'Tutorials', downloads: 'Downloads' },
+	'zh-cn': { home: '首页', tutorials: '教程', downloads: '下载' },
+	ja: { home: 'ホーム', tutorials: 'チュートリアル', downloads: 'ダウンロード' },
+	es: { home: 'Inicio', tutorials: 'Tutoriales', downloads: 'Descargas' },
+}[locale];
+
+const localeMeta: { id: UiLocale; label: string }[] = [
+	{ id: 'en', label: 'English' },
+	{ id: 'zh-cn', label: '简体中文' },
+	{ id: 'ja', label: '日本語' },
+	{ id: 'es', label: 'Español' },
+];
+
+function hrefForLocale(id: UiLocale): string {
+	const p = id === 'en' ? '' : `/${id}`;
+	const stripped = pathname.replace(/^\/(zh-cn|ja|es)(?=\/|$)/, '') || '/';
+	if (active === 'downloads' || stripped.startsWith('/downloads')) {
+		return `${p}/downloads/` || '/downloads/';
+	}
+	if (active === 'tutorials' || stripped.startsWith('/tutorials')) {
+		const rest = stripped.startsWith('/tutorials') ? stripped : '/tutorials/';
+		return `${p}${rest}`;
+	}
+	return p || '/';
+}
+
+const locales = localeMeta.map((l) => ({ ...l, href: hrefForLocale(l.id) }));
+---
+
+<Tag class:list={['mkt-header', { 'mkt-header--embedded': embedded }]}>
+	<a class="mkt-brand" href={homeHref}>
+		<img class="brand-logo" src="/brand/logo.png" width="28" height="28" alt="" decoding="async" />
+		<span class="mkt-brand__text">StmPy Studio</span>
+	</a>
+	<nav class="mkt-nav" aria-label="Primary">
+		<a class:list={[{ 'is-active': active === 'home' }]} href={homeHref}>{nav.home}</a>
+		<a class:list={[{ 'is-active': active === 'downloads' }]} href={downloadsHref}>{nav.downloads}</a>
+		<a class:list={[{ 'is-active': active === 'tutorials' }]} href={tutorialsHref}>{nav.tutorials}</a>
+	</nav>
+	<div class="mkt-tools">
+		{
+			showSearch && (
+				<div class="mkt-search">
+					<slot name="search" />
+				</div>
+			)
+		}
+		<label class="mkt-select">
+			<span class="sr-only">Theme</span>
+			<select data-theme-select>
+				<option value="dark">Dark</option>
+				<option value="light">Light</option>
+				<option value="auto">Auto</option>
+			</select>
+		</label>
+		<label class="mkt-select">
+			<span class="sr-only">Language</span>
+			<select data-lang-select onchange="location.href=this.value">
+				{
+					locales.map((l) => (
+						<option value={l.href} selected={l.id === locale}>
+							{l.label}
+						</option>
+					))
+				}
+			</select>
+		</label>
+	</div>
+</Tag>
+
+<script is:inline>
+	(function () {
+		var key = 'starlight-theme';
+		var root = document.documentElement;
+		function apply(v) {
+			var theme =
+				v === 'auto'
+					? matchMedia('(prefers-color-scheme: light)').matches
+						? 'light'
+						: 'dark'
+					: v;
+			root.dataset.theme = theme === 'light' ? 'light' : 'dark';
+		}
+		try {
+			if (!localStorage.getItem(key)) localStorage.setItem(key, 'dark');
+			var stored = localStorage.getItem(key) || 'dark';
+			apply(stored);
+			document.querySelectorAll('[data-theme-select]').forEach(function (sel) {
+				sel.value = stored;
+				sel.addEventListener('change', function () {
+					localStorage.setItem(key, sel.value);
+					apply(sel.value);
+				});
+			});
+		} catch (e) {
+			root.dataset.theme = 'dark';
+		}
+	})();
+</script>
+
+<style>
+	.mkt-header {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		height: 64px;
+		padding: 0 var(--space-lg);
+		background: var(--color-canvas);
+		color: var(--color-on-primary);
+		position: sticky;
+		top: 0;
+		z-index: 20;
+		width: 100%;
+		box-sizing: border-box;
+	}
+	.mkt-header--embedded {
+		position: relative;
+		top: auto;
+	}
+	:global(:root[data-theme='light']) .mkt-header {
+		background: var(--color-canvas-light);
+		color: var(--color-ink);
+		border-bottom: 1px solid var(--color-hairline);
+	}
+	.mkt-brand {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-xs);
+		color: inherit;
+		text-decoration: none;
+		font-weight: 500;
+		font-size: var(--type-body);
+		letter-spacing: -0.01em;
+		flex-shrink: 0;
+	}
+	.brand-logo {
+		width: 28px;
+		height: 28px;
+		display: block;
+		flex-shrink: 0;
+	}
+	/* Nav sits immediately after the brand; never centered — tools absorb the right side. */
+	.mkt-nav {
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		gap: var(--space-md);
+		margin: 0;
+		min-width: 0;
+		flex: 0 1 auto;
+	}
+	.mkt-nav a {
+		color: inherit;
+		text-decoration: none;
+		font-size: var(--type-body);
+		font-weight: 500;
+		opacity: 0.75;
+		padding: var(--space-xs) 0;
+		white-space: nowrap;
+	}
+	.mkt-nav a:hover,
+	.mkt-nav a.is-active {
+		opacity: 1;
+	}
+	.mkt-tools {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		margin-inline-start: auto;
+		flex-shrink: 0;
+	}
+	.mkt-search {
+		display: flex;
+		align-items: center;
+		max-width: 160px;
+	}
+	.mkt-search :global(site-search) {
+		display: block;
+		width: 100%;
+	}
+	.mkt-search :global(site-search button[data-open-modal]) {
+		width: 100%;
+		max-width: 160px;
+	}
+	.mkt-select select {
+		appearance: none;
+		background: transparent;
+		border: 1px solid var(--color-hairline-soft);
+		border-radius: var(--radius-app-md);
+		color: inherit;
+		font: inherit;
+		font-size: var(--type-caption);
+		padding: 4px 8px;
+		height: 32px;
+	}
+	:global(:root[data-theme='light']) .mkt-select select {
+		border-color: var(--color-hairline);
+	}
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		border: 0;
+	}
+	@media (max-width: 720px) {
+		.mkt-header {
+			gap: var(--space-sm);
+			padding: 0 var(--space-md);
+		}
+		.mkt-nav {
+			gap: var(--space-sm);
+		}
+		.mkt-nav a {
+			font-size: var(--type-caption);
+		}
+		.mkt-brand__text {
+			display: none;
+		}
+		.mkt-search {
+			display: none;
+		}
+	}
+</style>

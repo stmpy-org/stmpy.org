@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "channel": "stable",
+  "product": "stmpy-studio",
+  "version": "0.0.2",
+  "releasedAt": "2026-11-10T00:00:00Z",
+  "notesUrl": "https://github.com/stmpy-org/stmpy-studio/releases/tag/v0.0.2",
+  "bundledStmpy": "0.0.2"
+}

@@ -1,0 +1,416 @@
+---
+import StudioDemo from './StudioDemo.astro';
+import { BLINK_SAMPLE, homeCopy } from '../data/home';
+import type { UiLocale } from '../data/ui';
+
+interface Props {
+	locale: UiLocale;
+}
+const { locale } = Astro.props;
+const t = homeCopy(locale);
+const prefix = locale === 'en' ? '' : `/${locale}`;
+---
+
+<section class="band band--hero">
+	<div class="wrap">
+		<p class="eye">{t.eyebrow}</p>
+		<h1 class="display">{t.heroTitle}</h1>
+		<p class="lead">{t.heroTagline}</p>
+		<div class="actions">
+			<a class="btn-primary" href={`${prefix}/downloads/`}>{t.ctaDownload}</a>
+			<a class="btn-ghost" href={`${prefix}/tutorials/`}>{t.ctaTutorials}</a>
+		</div>
+		<div class="demo-slot">
+			<StudioDemo />
+		</div>
+	</div>
+</section>
+
+<section class="band">
+	<div class="wrap">
+		<p class="eye">{t.whatEyebrow}</p>
+		<h2 class="h-md">{t.whatTitle}</h2>
+		<p class="body">{t.whatBody}</p>
+	</div>
+</section>
+
+<section class="band band--soft">
+	<div class="wrap">
+		<p class="eye">{t.featuresEyebrow}</p>
+		<h2 class="h-md">{t.featuresTitle}</h2>
+		<ul class="feature-grid">
+			{
+				t.features.map((f) => (
+					<li class:list={['feature-card', f.brand && 'feature-card--brand']}>
+						<p class="feature-card__eyebrow">{f.eyebrow}</p>
+						<h3 class="feature-card__title">{f.title}</h3>
+						<p class="feature-card__body">{f.body}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<section class="band">
+	<div class="wrap split">
+		<div>
+			<p class="eye">{t.codeEyebrow}</p>
+			<h2 class="h-md">{t.codeTitle}</h2>
+			<p class="body">{t.codeBody}</p>
+		</div>
+		<pre class="code-block"><code>{BLINK_SAMPLE}</code></pre>
+	</div>
+</section>
+
+<section class="band band--paper">
+	<div class="wrap">
+		<p class="eye">{t.stepsEyebrow}</p>
+		<h2 class="h-md">{t.stepsTitle}</h2>
+		<ol class="steps">
+			{
+				t.steps.map((s, i) => (
+					<li>
+						<span class="steps__n">{i + 1}</span>
+						<div>
+							<h3 class="h-sm">{s.title}</h3>
+							<p class="body">{s.body}</p>
+						</div>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+</section>
+
+<section class="band">
+	<div class="wrap">
+		<p class="eye">{t.chipsEyebrow}</p>
+		<h2 class="h-md">{t.chipsTitle}</h2>
+		<p class="body">{t.chipsBody}</p>
+		<ul class="chip-list">
+			<li>{t.chipsF1}</li>
+			<li>{t.chipsF4}</li>
+		</ul>
+		<p class="meta">{t.chipsNote}</p>
+	</div>
+</section>
+
+<section class="band band--soft">
+	<div class="wrap">
+		<p class="eye">{t.tutorialsEyebrow}</p>
+		<h2 class="h-md">{t.tutorialsTitle}</h2>
+		<p class="body">{t.tutorialsBody}</p>
+		<ul class="link-cards">
+			{
+				t.tutorialLinks.map((l) => (
+					<li>
+						<a href={`${prefix}/${l.href}`}>
+							<strong>{l.label}</strong>
+							<span>{l.body}</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<section class="band band--cta">
+	<div class="wrap">
+		<p class="eye">{t.ctaBandEyebrow}</p>
+		<h2 class="h-md">{t.ctaBandTitle}</h2>
+		<p class="body">{t.ctaBandBody}</p>
+		<a class="btn-primary" href={`${prefix}/downloads/`}>{t.ctaDownload}</a>
+	</div>
+</section>
+
+<section class="band">
+	<div class="wrap">
+		<p class="eye">{t.faqEyebrow}</p>
+		<h2 class="h-md">{t.faqTitle}</h2>
+		<div class="faq">
+			{
+				t.faqs.map((f) => (
+					<details>
+						<summary>{f.q}</summary>
+						<p>{f.a}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.band {
+		padding: var(--space-section-lg) 0;
+	}
+	.band--hero {
+		padding-top: var(--space-xxl);
+	}
+	.band--soft {
+		background: var(--color-canvas-soft);
+	}
+	:global(:root[data-theme='light']) .band--soft {
+		background: var(--color-canvas-paper);
+	}
+	.band--paper {
+		background: var(--color-canvas-soft);
+	}
+	:global(:root[data-theme='light']) .band--paper {
+		background: var(--color-canvas-paper);
+		color: var(--color-ink);
+	}
+	/* Distinct from Learn (band--soft) above and FAQ (page canvas) below */
+	.band--cta {
+		background: var(--color-graphite);
+		border-block: 1px solid var(--color-hairline-soft);
+		color: var(--color-on-primary);
+	}
+	:global(:root[data-theme='light']) .band--cta {
+		background: var(--color-canvas-light);
+		border-block: 1px solid var(--color-hairline);
+		box-shadow: inset 0 0 0 1px var(--color-hairline);
+		color: var(--color-ink);
+	}
+	.band--cta .eye {
+		color: var(--color-ash);
+	}
+	:global(:root[data-theme='light']) .band--cta .eye {
+		color: var(--color-mute);
+	}
+	.band--cta .body {
+		color: var(--color-ash);
+	}
+	:global(:root[data-theme='light']) .band--cta .body {
+		color: var(--color-ink-soft);
+	}
+	.band--cta .h-md {
+		color: inherit;
+	}
+	.wrap {
+		width: min(1100px, calc(100% - 2 * var(--space-lg)));
+		margin-inline: auto;
+	}
+	.wrap.split {
+		display: grid;
+		gap: var(--space-xl);
+		align-items: start;
+	}
+	@media (min-width: 900px) {
+		.wrap.split {
+			grid-template-columns: 1fr 1.1fr;
+		}
+	}
+	.eye {
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-eyebrow);
+		color: var(--color-mute);
+		margin: 0 0 var(--space-sm);
+		letter-spacing: 0.02em;
+	}
+	.display {
+		/* Dominant but proportionate — was clamp(3.5rem, 9vw, 112px) */
+		font-size: clamp(2.25rem, 5.5vw, var(--type-display-xl));
+		font-weight: 400;
+		line-height: 1;
+		letter-spacing: -0.04em;
+		margin: 0 0 var(--space-lg);
+		max-width: 12ch;
+	}
+	.h-md {
+		font-size: clamp(1.75rem, 4vw, var(--type-display-sm));
+		font-weight: 400;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin: 0 0 var(--space-md);
+	}
+	.h-sm {
+		font-size: var(--type-heading-sm);
+		font-weight: 400;
+		letter-spacing: -0.01em;
+		margin: 0 0 var(--space-xxs);
+	}
+	.lead {
+		font-size: var(--type-subtitle);
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--color-ash);
+		max-width: 36rem;
+		margin: 0 0 var(--space-lg);
+	}
+	:global(:root[data-theme='light']) .lead {
+		color: var(--color-slate);
+	}
+	.body {
+		font-size: var(--type-body);
+		line-height: 1.5;
+		color: var(--color-ash);
+		margin: 0 0 var(--space-md);
+	}
+	:global(:root[data-theme='light']) .body {
+		color: var(--color-ink-soft);
+	}
+	.meta {
+		font-size: var(--type-meta);
+		color: var(--color-mute);
+		margin: var(--space-md) 0 0;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+		margin-bottom: var(--space-xxl);
+	}
+	.btn-primary,
+	.btn-ghost {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 40px;
+		padding: 0 var(--space-md);
+		border-radius: var(--radius-full);
+		text-decoration: none;
+		font-weight: 500;
+		font-size: var(--type-body);
+		line-height: 1;
+		vertical-align: middle;
+	}
+	.btn-primary {
+		background: var(--color-canvas-light);
+		color: var(--color-ink);
+		border: 1px solid var(--color-ink);
+	}
+	:global(:root[data-theme='light']) .btn-primary {
+		background: var(--color-ink);
+		color: var(--color-on-primary);
+	}
+	.btn-ghost {
+		color: var(--color-ash);
+		border: 1px solid transparent;
+	}
+	.band--cta .btn-primary {
+		margin-top: var(--space-sm);
+	}
+	.demo-slot {
+		width: 100%;
+		max-width: 920px;
+	}
+	.feature-grid {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		display: grid;
+		gap: var(--space-lg);
+		grid-template-columns: 1fr;
+	}
+	@media (min-width: 800px) {
+		.feature-grid {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+	.code-block {
+		margin: 0;
+		padding: var(--space-md);
+		background: #1e1e1e;
+		border: 1px solid var(--color-hairline-soft);
+		border-radius: var(--radius-app-lg);
+		overflow: auto;
+		font-family: var(--font-mono);
+		font-size: 13px;
+		line-height: 1.45;
+		color: #d4d4d4;
+	}
+	.steps {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		display: grid;
+		gap: var(--space-lg);
+	}
+	@media (min-width: 800px) {
+		.steps {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+	.steps li {
+		display: flex;
+		gap: var(--space-md);
+		align-items: flex-start;
+	}
+	.steps__n {
+		flex-shrink: 0;
+		width: 28px;
+		height: 28px;
+		border-radius: var(--radius-full);
+		background: var(--color-ink);
+		color: var(--color-on-primary);
+		border: 1px solid transparent;
+		display: grid;
+		place-items: center;
+		font-size: var(--type-caption);
+		font-weight: 600;
+		box-sizing: border-box;
+	}
+	:global(:root[data-theme='dark']) .steps__n,
+	:global(:root:not([data-theme='light'])) .steps__n {
+		background: var(--color-canvas);
+		border-color: var(--color-ash);
+		color: var(--color-on-primary);
+	}
+	.chip-list {
+		margin: var(--space-md) 0 0;
+		padding-left: 1.1rem;
+		color: var(--color-ash);
+		line-height: 1.6;
+	}
+	.link-cards {
+		list-style: none;
+		margin: var(--space-xl) 0 0;
+		padding: 0;
+		display: grid;
+		gap: var(--space-sm);
+	}
+	.link-cards a {
+		display: grid;
+		gap: 4px;
+		padding: var(--space-md) var(--space-lg);
+		border-radius: var(--radius-marketing);
+		border: 1px solid var(--color-hairline-soft);
+		background: var(--color-canvas);
+		color: inherit;
+		text-decoration: none;
+	}
+	:global(:root[data-theme='light']) .link-cards a {
+		background: var(--color-canvas-light);
+		border-color: var(--color-hairline);
+	}
+	.link-cards strong {
+		font-weight: 500;
+		font-size: var(--type-body);
+	}
+	.link-cards span {
+		font-size: var(--type-caption);
+		color: var(--color-mute);
+	}
+	.faq details {
+		border-top: 1px solid var(--color-hairline-soft);
+		padding: var(--space-md) 0;
+	}
+	.faq details:last-child {
+		border-bottom: 1px solid var(--color-hairline-soft);
+	}
+	.faq summary {
+		cursor: pointer;
+		font-weight: 500;
+		letter-spacing: -0.01em;
+	}
+	.faq p {
+		margin: var(--space-sm) 0 0;
+		color: var(--color-ash);
+		font-size: var(--type-body-sm);
+		line-height: 1.5;
+	}
+</style>

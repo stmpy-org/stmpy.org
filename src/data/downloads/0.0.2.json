@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "product": "stmpy-studio",
+  "version": "0.0.2",
+  "releasedAt": "2026-11-10T00:00:00Z",
+  "bundledStmpy": "0.0.2",
+  "notesUrl": "https://github.com/stmpy-org/stmpy-studio/releases/tag/v0.0.2",
+  "assets": [
+    {
+      "id": "macos-arm64-dmg",
+      "platform": "macos-arm64",
+      "os": "macos",
+      "arch": "arm64",
+      "ext": ".dmg",
+      "filename": "stmpy-studio-0.0.2-macos-arm64.dmg",
+      "size": null,
+      "sha256": null,
+      "label": {
+        "en": "macOS (Apple Silicon)",
+        "zh-cn": "macOS（Apple Silicon）",
+        "ja": "macOS（Apple Silicon）",
+        "es": "macOS (Apple Silicon)"
+      }
+    },
+    {
+      "id": "windows-x86_64-exe",
+      "platform": "windows-x86_64",
+      "os": "windows",
+      "arch": "x86_64",
+      "ext": ".exe",
+      "filename": "stmpy-studio-0.0.2-windows-x86_64.exe",
+      "size": null,
+      "sha256": null,
+      "label": {
+        "en": "Windows (x64)",
+        "zh-cn": "Windows（x64）",
+        "ja": "Windows（x64）",
+        "es": "Windows (x64)"
+      }
+    },
+    {
+      "id": "linux-x86_64-deb",
+      "platform": "linux-x86_64",
+      "os": "linux",
+      "arch": "x86_64",
+      "ext": ".deb",
+      "filename": "stmpy-studio-0.0.2-linux-x86_64.deb",
+      "size": null,
+      "sha256": null,
+      "label": {
+        "en": "Linux (x64) .deb",
+        "zh-cn": "Linux（x64）.deb",
+        "ja": "Linux（x64）.deb",
+        "es": "Linux (x64) .deb"
+      }
+    },
+    {
+      "id": "linux-x86_64-appimage",
+      "platform": "linux-x86_64",
+      "os": "linux",
+      "arch": "x86_64",
+      "ext": ".AppImage",
+      "filename": "stmpy-studio-0.0.2-linux-x86_64.AppImage",
+      "size": null,
+      "sha256": null,
+      "label": {
+        "en": "Linux (x64) AppImage",
+        "zh-cn": "Linux（x64）AppImage",
+        "ja": "Linux（x64）AppImage",
+        "es": "Linux (x64) AppImage"
+      }
+    }
+  ],
+  "installHints": {
+    "macos": {
+      "en": "The app is not notarized yet. After copying it to Applications, run: xattr -dr com.apple.quarantine \"/Applications/StmPy Studio.app\"",
+      "zh-cn": "应用尚未公证。复制到「应用程序」后运行：xattr -dr com.apple.quarantine \"/Applications/StmPy Studio.app\"",
+      "ja": "まだ公証されていません。Applications にコピーしたあと実行してください: xattr -dr com.apple.quarantine \"/Applications/StmPy Studio.app\"",
+      "es": "La app aún no está notarizada. Tras copiarla a Applications, ejecuta: xattr -dr com.apple.quarantine \"/Applications/StmPy Studio.app\""
+    },
+    "linux-appimage": {
+      "en": "The .deb installs probe-rs udev rules. With the AppImage, install probe-rs udev rules yourself.",
+      "zh-cn": ".deb 会安装 probe-rs 的 udev 规则；使用 AppImage 时需自行安装。",
+      "ja": ".deb は probe-rs の udev ルールを入れます。AppImage では自分で入れてください。",
+      "es": "El .deb instala las reglas udev de probe-rs. Con AppImage debes instalarlas tú."
+    }
+  }
+}

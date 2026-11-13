@@ -1,0 +1,269 @@
+---
+import { DOWNLOAD_BASE_URL } from '../data/config';
+import latest from '../data/downloads/latest.json';
+import manifest002 from '../data/downloads/0.0.2.json';
+import { normalizeLocale, ui } from '../data/ui';
+
+type Asset = {
+	id: string;
+	platform: string;
+	os: string;
+	ext: string;
+	filename: string;
+	label: Record<string, string>;
+};
+
+type Manifest = {
+	version: string;
+	bundledStmpy?: string;
+	notesUrl?: string;
+	assets: Asset[];
+};
+
+type FormatOption = {
+	text: string;
+	href: string;
+};
+
+const locale = normalizeLocale(Astro.props.locale ?? Astro.currentLocale);
+const t = ui(locale);
+
+const catalog: Record<string, Manifest> = {
+	'0.0.2': manifest002 as Manifest,
+};
+const manifest = catalog[latest.version];
+if (!manifest) {
+	throw new Error(`missing manifest for version ${latest.version}`);
+}
+
+function assetUrl(filename: string) {
+	return `${DOWNLOAD_BASE_URL}/${manifest.version}/${filename}`;
+}
+
+const downloadWord = {
+	en: 'Download',
+	'zh-cn': '下载',
+	ja: 'ダウンロード',
+	es: 'Descargar',
+}[locale];
+
+function buttonText(format: string) {
+	return `${downloadWord} ${format}`;
+}
+
+function macosButtons(assets: Asset[]): FormatOption[] {
+	return assets.map((a) => ({
+		text: buttonText('.dmg (Apple Silicon)'),
+		href: assetUrl(a.filename),
+	}));
+}
+
+function windowsButtons(assets: Asset[]): FormatOption[] {
+	return assets.map((a) => ({
+		text: buttonText('.exe (x64)'),
+		href: assetUrl(a.filename),
+	}));
+}
+
+function linuxButtons(assets: Asset[]): FormatOption[] {
+	const order = ['.deb', '.AppImage'];
+	return order
+		.map((ext) => assets.find((a) => a.ext === ext))
+		.filter((a): a is Asset => !!a)
+		.map((a) => ({
+			text: buttonText(a.ext === '.AppImage' ? '.AppImage' : '.deb'),
+			href: assetUrl(a.filename),
+		}));
+}
+
+const platforms = [
+	{
+		id: 'macos',
+		name: 'macOS',
+		icon: '/download/003-apple-logo.png',
+		iconClass: 'dl-card__icon--apple',
+		buttons: macosButtons(manifest.assets.filter((a) => a.os === 'macos')),
+	},
+	{
+		id: 'windows',
+		name: 'Windows',
+		icon: '/download/001-windows.png',
+		iconClass: '',
+		buttons: windowsButtons(manifest.assets.filter((a) => a.os === 'windows')),
+	},
+	{
+		id: 'linux',
+		name: 'Linux',
+		icon: '/download/002-linux.png',
+		iconClass: '',
+		buttons: linuxButtons(manifest.assets.filter((a) => a.os === 'linux')),
+	},
+] as const;
+---
+
+<section class="dl">
+	<header class="dl__head">
+		<p class="dl__eyebrow">STMPY STUDIO</p>
+		<h1>{t.downloadHeading}</h1>
+		<p class="dl__lead">{t.downloadLead}</p>
+		<p class="dl__meta">
+			<span>{t.versionLabel}: <strong>{manifest.version}</strong></span>
+			{
+				manifest.bundledStmpy && (
+					<span>
+						{t.bundledLabel}: <strong>{manifest.bundledStmpy}</strong>
+					</span>
+				)
+			}
+		</p>
+	</header>
+
+	<ul class="dl-cards">
+		{
+			platforms.map((p) => (
+				<li class="dl-card">
+					<img
+						class:list={['dl-card__icon', p.iconClass]}
+						src={p.icon}
+						alt=""
+						width="64"
+						height="64"
+						decoding="async"
+					/>
+					<h2 class="dl-card__name">{p.name}</h2>
+					<div class="dl-card__actions">
+						{p.buttons.map((btn) => (
+							<a class="dl-btn" href={btn.href}>
+								{btn.text}
+							</a>
+						))}
+					</div>
+				</li>
+			))
+		}
+	</ul>
+</section>
+
+<style>
+	.dl {
+		display: grid;
+		gap: var(--space-xxl);
+	}
+	.dl__eyebrow {
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-eyebrow);
+		color: var(--color-mute);
+		margin: 0 0 var(--space-sm);
+		letter-spacing: 0.02em;
+	}
+	.dl__head h1 {
+		font-size: clamp(2rem, 5vw, var(--type-display-sm));
+		font-weight: 400;
+		letter-spacing: -0.03em;
+		line-height: 1.1;
+		margin: 0 0 var(--space-sm);
+		color: var(--sl-color-white);
+	}
+	.dl__lead {
+		margin: 0;
+		font-size: var(--type-subtitle);
+		line-height: 1.5;
+		letter-spacing: -0.01em;
+		color: var(--color-ash);
+		max-width: 40rem;
+	}
+	:global(:root[data-theme='light']) .dl__lead {
+		color: var(--color-slate);
+	}
+	.dl__meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm) var(--space-lg);
+		font-size: var(--type-caption);
+		margin: var(--space-md) 0 0;
+		color: var(--color-mute);
+	}
+	.dl__meta a {
+		color: var(--sl-color-text-accent);
+	}
+	.dl__meta strong {
+		color: var(--sl-color-white);
+		font-weight: 500;
+	}
+	.dl-cards {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		gap: var(--space-lg);
+		grid-template-columns: 1fr;
+	}
+	@media (min-width: 800px) {
+		.dl-cards {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+	.dl-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: var(--space-sm);
+		padding: var(--space-xl) var(--space-lg);
+		border: 1px solid var(--color-hairline-soft);
+		border-radius: var(--radius-marketing);
+		background: var(--color-canvas-soft);
+		min-height: 100%;
+		box-sizing: border-box;
+	}
+	:global(:root[data-theme='light']) .dl-card {
+		background: var(--color-canvas-light);
+		border-color: var(--color-hairline);
+	}
+	.dl-card__icon {
+		width: 64px;
+		height: 64px;
+		object-fit: contain;
+		display: block;
+		margin-bottom: var(--space-xs);
+	}
+	:global(:root[data-theme='dark']) .dl-card__icon--apple,
+	:global(:root:not([data-theme='light'])) .dl-card__icon--apple {
+		filter: invert(1);
+	}
+	.dl-card__name {
+		margin: 0;
+		font-size: var(--type-heading-sm);
+		font-weight: 500;
+		letter-spacing: -0.02em;
+	}
+	.dl-card__actions {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--space-sm);
+		width: 100%;
+		margin-top: var(--space-md);
+	}
+	.dl-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		box-sizing: border-box;
+		height: 40px;
+		padding: 0 var(--space-md);
+		border-radius: var(--radius-full);
+		text-decoration: none;
+		font-weight: 500;
+		font-size: var(--type-body);
+		line-height: 1;
+		background: var(--color-canvas-light);
+		color: var(--color-ink);
+		border: 1px solid var(--color-ink);
+	}
+	:global(:root[data-theme='light']) .dl-btn {
+		background: var(--color-ink);
+		color: var(--color-on-primary);
+		border-color: var(--color-ink);
+	}
+</style>

@@ -1,0 +1,21 @@
+---
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<span class="site-title-wrap sl-flex">
+	<img class="brand-logo" src="/brand/logo.png" width="28" height="28" alt="" decoding="async" />
+	<Default><slot /></Default>
+</span>
+
+<style>
+	.site-title-wrap {
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.brand-logo {
+		width: 28px;
+		height: 28px;
+		display: block;
+		flex-shrink: 0;
+	}
+</style>

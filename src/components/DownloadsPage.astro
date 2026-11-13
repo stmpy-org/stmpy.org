@@ -1,0 +1,25 @@
+---
+import DownloadList from './DownloadList.astro';
+import type { UiLocale } from '../data/ui';
+
+interface Props {
+	locale: UiLocale;
+}
+const { locale } = Astro.props;
+---
+
+<section class="dl-page">
+	<div class="wrap">
+		<DownloadList locale={locale} />
+	</div>
+</section>
+
+<style>
+	.dl-page {
+		padding: var(--space-section) 0 var(--space-section-lg);
+	}
+	.wrap {
+		width: min(1100px, calc(100% - 2 * var(--space-lg)));
+		margin-inline: auto;
+	}
+</style>

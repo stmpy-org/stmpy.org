@@ -1,0 +1,39 @@
+---
+import config from 'virtual:starlight/user-config';
+import Search from 'virtual:starlight/components/Search';
+import SiteHeader from '../SiteHeader.astro';
+import type { UiLocale } from '../../data/ui';
+
+const shouldRenderSearch =
+	config.pagefind || config.components.Search !== '@astrojs/starlight/components/Search.astro';
+
+const slLocale = Astro.locals.starlightRoute.locale ?? 'root';
+const locale: UiLocale = slLocale === 'root' ? 'en' : (slLocale as UiLocale);
+---
+
+<SiteHeader locale={locale} active="tutorials" embedded showSearch={shouldRenderSearch}>
+	{shouldRenderSearch && <Search slot="search" />}
+</SiteHeader>
+
+<style is:global>
+	/* Let the shared SiteHeader paint the bar; collapse Starlight chrome around it. */
+	header.header {
+		padding: 0 !important;
+		height: auto !important;
+		min-height: 64px;
+		width: 100% !important;
+		max-width: none !important;
+		background: transparent !important;
+		border-bottom: none !important;
+		box-shadow: none !important;
+		/* Starlight uses inset padding vars — zero them so mkt-header padding matches marketing pages */
+		--sl-nav-pad-x: 0;
+		--sl-nav-pad: 0;
+	}
+	header.header .mkt-header {
+		border-bottom: none;
+	}
+	:root[data-theme='light'] header.header .mkt-header {
+		border-bottom: 1px solid var(--color-hairline);
+	}
+</style>

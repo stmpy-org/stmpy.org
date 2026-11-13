@@ -1,0 +1,116 @@
+---
+import type { UiLocale } from '../data/ui';
+
+interface Props {
+	locale: UiLocale;
+}
+const { locale } = Astro.props;
+const prefix = locale === 'en' ? '' : `/${locale}`;
+---
+
+<footer class="mkt-footer">
+	<div class="mkt-footer__grid">
+		<div>
+			<p class="mkt-footer__eye">Product</p>
+			<a href={prefix || '/'}>
+				{
+					{ en: 'Home', 'zh-cn': '首页', ja: 'ホーム', es: 'Inicio' }[locale]
+				}
+			</a>
+			<a href={`${prefix}/downloads/`}>
+				{
+					{ en: 'Downloads', 'zh-cn': '下载', ja: 'ダウンロード', es: 'Descargas' }[locale]
+				}
+			</a>
+			<a href={`${prefix}/tutorials/`}>
+				{
+					{ en: 'Tutorials', 'zh-cn': '教程', ja: 'チュートリアル', es: 'Tutoriales' }[locale]
+				}
+			</a>
+		</div>
+		<div>
+			<p class="mkt-footer__eye">Source</p>
+			<a href="https://github.com/stmpy-org/stmpy-studio" rel="noopener noreferrer">stmpy-studio</a>
+			<a href="https://github.com/stmpy-org/stmpy" rel="noopener noreferrer">stmpy</a>
+		</div>
+		<div>
+			<p class="mkt-footer__eye">Docs</p>
+			<a href={`${prefix}/tutorials/getting-started/installation/`}>Installation</a>
+			<a href={`${prefix}/tutorials/getting-started/first-project/`}>First program</a>
+		</div>
+	</div>
+	<div class="mkt-footer__bottom">
+		<span class="mkt-footer__mark"
+			><img class="brand-logo brand-logo--sm" src="/brand/logo.png" width="18" height="18" alt="" decoding="async" />
+			StmPy Studio</span
+		>
+		<span class="mkt-footer__meta">stmpy.org · Apache-2.0</span>
+	</div>
+</footer>
+
+<style>
+	.mkt-footer {
+		background: var(--color-canvas);
+		color: var(--color-on-primary);
+		padding: var(--space-section) var(--space-lg) var(--space-xl);
+		margin-top: var(--space-section-lg);
+	}
+	:global(:root[data-theme='light']) .mkt-footer {
+		border-top: 1px solid var(--color-hairline);
+	}
+	.mkt-footer__grid {
+		display: grid;
+		gap: var(--space-xl);
+		grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+		max-width: 960px;
+		margin: 0 auto var(--space-xxl);
+	}
+	.mkt-footer__eye {
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-caps);
+		color: var(--color-mute);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0 0 var(--space-sm);
+	}
+	.mkt-footer a {
+		display: block;
+		color: var(--color-ash);
+		text-decoration: none;
+		font-size: var(--type-caption);
+		padding: 3px 0;
+	}
+	.mkt-footer a:hover {
+		color: var(--color-on-primary);
+	}
+	.mkt-footer__bottom {
+		max-width: 960px;
+		margin: 0 auto;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-md);
+		justify-content: space-between;
+		align-items: center;
+		padding-top: var(--space-lg);
+		border-top: 1px solid var(--color-hairline-soft);
+	}
+	.mkt-footer__mark {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-xs);
+		font-size: var(--type-caption);
+	}
+	.brand-logo {
+		width: 18px;
+		height: 18px;
+		display: block;
+		flex-shrink: 0;
+	}
+	.mkt-footer__meta {
+		font-family: var(--font-mono);
+		font-size: var(--type-mono-caps);
+		color: var(--color-mute);
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+	}
+</style>
