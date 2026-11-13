@@ -21,6 +21,11 @@ type Manifest = {
 	installHints?: Record<string, Record<string, string>>;
 };
 
+type FormatOption = {
+	formatLabel: string;
+	href: string;
+};
+
 const locale = normalizeLocale(Astro.props.locale ?? Astro.currentLocale);
 const t = ui(locale);
 
@@ -36,18 +41,37 @@ function assetUrl(filename: string) {
 	return `${DOWNLOAD_BASE_URL}/${manifest.version}/${filename}`;
 }
 
-function labelFor(asset: Asset) {
-	return asset.label[locale] ?? asset.label.en ?? asset.filename;
+const downloadWord = {
+	en: 'Download',
+	'zh-cn': '下载',
+	ja: 'ダウンロード',
+	es: 'Descargar',
+}[locale];
+
+function macosFormats(assets: Asset[]): FormatOption[] {
+	return assets.map((a) => ({
+		formatLabel: '.dmg (Apple Silicon)',
+		href: assetUrl(a.filename),
+	}));
 }
 
-function hint(key: string) {
-	const block = manifest.installHints?.[key];
-	if (!block) return null;
-	return block[locale] ?? block.en ?? null;
+function windowsFormats(assets: Asset[]): FormatOption[] {
+	return assets.map((a) => ({
+		formatLabel: '.exe (x64)',
+		href: assetUrl(a.filename),
+	}));
 }
 
-const macosHint = hint('macos');
-const linuxHint = hint('linux-appimage');
+function linuxFormats(assets: Asset[]): FormatOption[] {
+	const order = ['.deb', '.AppImage'];
+	return order
+		.map((ext) => assets.find((a) => a.ext === ext))
+		.filter((a): a is Asset => !!a)
+		.map((a) => ({
+			formatLabel: a.ext === '.AppImage' ? '.AppImage' : '.deb',
+			href: assetUrl(a.filename),
+		}));
+}
 
 const platforms = [
 	{
@@ -55,64 +79,30 @@ const platforms = [
 		name: 'macOS',
 		icon: '/download/003-apple-logo.png',
 		iconClass: 'dl-card__icon--apple',
-		detail: {
-			en: 'Apple Silicon (.dmg)',
-			'zh-cn': 'Apple Silicon（.dmg）',
-			ja: 'Apple Silicon（.dmg）',
-			es: 'Apple Silicon (.dmg)',
-		}[locale],
-		assets: manifest.assets.filter((a) => a.os === 'macos'),
-		hint: macosHint,
-		hintTitle: t.macosHintTitle,
+		formats: macosFormats(manifest.assets.filter((a) => a.os === 'macos')),
 	},
 	{
 		id: 'windows',
 		name: 'Windows',
 		icon: '/download/001-windows.png',
 		iconClass: '',
-		detail: {
-			en: 'x64 installer (.exe)',
-			'zh-cn': 'x64 安装包（.exe）',
-			ja: 'x64 インストーラ（.exe）',
-			es: 'Instalador x64 (.exe)',
-		}[locale],
-		assets: manifest.assets.filter((a) => a.os === 'windows'),
-		hint: null as string | null,
-		hintTitle: '',
+		formats: windowsFormats(manifest.assets.filter((a) => a.os === 'windows')),
 	},
 	{
 		id: 'linux',
 		name: 'Linux',
 		icon: '/download/002-linux.png',
 		iconClass: '',
-		detail: {
-			en: 'x64 .deb and AppImage',
-			'zh-cn': 'x64 .deb 与 AppImage',
-			ja: 'x64 .deb と AppImage',
-			es: 'x64 .deb y AppImage',
-		}[locale],
-		assets: manifest.assets.filter((a) => a.os === 'linux'),
-		hint: linuxHint,
-		hintTitle: t.linuxHintTitle,
+		formats: linuxFormats(manifest.assets.filter((a) => a.os === 'linux')),
 	},
 ] as const;
 
-const btnLabels: Record<string, Record<string, string>> = {
-	en: { dmg: 'Download .dmg', exe: 'Download .exe', deb: 'Download .deb', appimage: 'Download AppImage' },
-	'zh-cn': { dmg: '下载 .dmg', exe: '下载 .exe', deb: '下载 .deb', appimage: '下载 AppImage' },
-	ja: { dmg: '.dmg を入手', exe: '.exe を入手', deb: '.deb を入手', appimage: 'AppImage を入手' },
-	es: { dmg: 'Descargar .dmg', exe: 'Descargar .exe', deb: 'Descargar .deb', appimage: 'Descargar AppImage' },
-};
-const bl = btnLabels[locale] ?? btnLabels.en;
-
-function buttonLabel(asset: Asset) {
-	const ext = asset.ext.toLowerCase();
-	if (ext === '.dmg') return bl.dmg;
-	if (ext === '.exe') return bl.exe;
-	if (ext === '.deb') return bl.deb;
-	if (ext === '.appimage') return bl.appimage;
-	return labelFor(asset);
-}
+const chooseFormatLabel = {
+	en: 'Choose format',
+	'zh-cn': '选择格式',
+	ja: '形式を選択',
+	es: 'Elegir formato',
+}[locale];
 ---
 
 <section class="dl">
@@ -142,36 +132,170 @@ function buttonLabel(asset: Asset) {
 
 	<ul class="dl-cards">
 		{
-			platforms.map((p) => (
-				<li class="dl-card">
-					<img
-						class:list={['dl-card__icon', p.iconClass]}
-						src={p.icon}
-						alt=""
-						width="64"
-						height="64"
-						decoding="async"
-					/>
-					<h2 class="dl-card__name">{p.name}</h2>
-					<p class="dl-card__detail">{p.detail}</p>
-					<div class="dl-card__actions">
-						{p.assets.map((asset) => (
-							<a class="dl-btn" href={assetUrl(asset.filename)}>
-								{buttonLabel(asset)}
-							</a>
-						))}
-					</div>
-					{p.hint && (
-						<aside class="dl-card__hint">
-							<strong>{p.hintTitle}</strong>
-							<p>{p.hint}</p>
-						</aside>
-					)}
-				</li>
-			))
+			platforms.map((p) => {
+				const initial = p.formats[0];
+				const multi = p.formats.length > 1;
+				return (
+					<li class="dl-card">
+						<img
+							class:list={['dl-card__icon', p.iconClass]}
+							src={p.icon}
+							alt=""
+							width="64"
+							height="64"
+							decoding="async"
+						/>
+						<h2 class="dl-card__name">{p.name}</h2>
+						<div class="dl-card__actions">
+							{initial && (
+								<div class="dl-split" data-dl-split={multi ? '' : undefined}>
+									<a class="dl-split__go" href={initial.href} data-dl-go>
+										{downloadWord}
+									</a>
+									<span class="dl-split__sep" aria-hidden="true" />
+									{multi ? (
+										<div class="dl-split__picker">
+											<button
+												type="button"
+												class="dl-split__fmt"
+												aria-haspopup="listbox"
+												aria-expanded="false"
+												aria-label={chooseFormatLabel}
+												data-dl-toggle
+											>
+												<span data-dl-label>{initial.formatLabel}</span>
+												<svg
+													class="dl-split__chev"
+													viewBox="0 0 12 12"
+													width="12"
+													height="12"
+													aria-hidden="true"
+												>
+													<path
+														d="M2.5 4.5 6 8l3.5-3.5"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="1.5"
+														stroke-linecap="round"
+														stroke-linejoin="round"
+													/>
+												</svg>
+											</button>
+											<ul class="dl-split__menu" role="listbox" hidden data-dl-menu>
+												{p.formats.map((opt, i) => (
+													<li role="presentation">
+														<button
+															type="button"
+															role="option"
+															class="dl-split__option"
+															aria-selected={i === 0 ? 'true' : 'false'}
+															data-href={opt.href}
+															data-label={opt.formatLabel}
+														>
+															{opt.formatLabel}
+														</button>
+													</li>
+												))}
+											</ul>
+										</div>
+									) : (
+										<span class="dl-split__fmt dl-split__fmt--static">{initial.formatLabel}</span>
+									)}
+								</div>
+							)}
+						</div>
+					</li>
+				);
+			})
 		}
 	</ul>
 </section>
+
+<script>
+	function closeAll(except?: HTMLElement) {
+		document.querySelectorAll('[data-dl-split]').forEach((root) => {
+			if (except && root === except) return;
+			const menu = root.querySelector('[data-dl-menu]');
+			const toggle = root.querySelector('[data-dl-toggle]');
+			if (menu) menu.hidden = true;
+			if (toggle) toggle.setAttribute('aria-expanded', 'false');
+		});
+	}
+
+	document.querySelectorAll('[data-dl-split]').forEach((root) => {
+		const go = root.querySelector('[data-dl-go]');
+		const toggle = root.querySelector('[data-dl-toggle]');
+		const menu = root.querySelector('[data-dl-menu]');
+		const label = root.querySelector('[data-dl-label]');
+		if (!go || !toggle || !menu || !label) return;
+
+		toggle.addEventListener('click', (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			const open = menu.hidden;
+			closeAll();
+			if (open) {
+				menu.hidden = false;
+				toggle.setAttribute('aria-expanded', 'true');
+				const selected = menu.querySelector('[aria-selected="true"]');
+				(selected || menu.querySelector('[role="option"]'))?.focus();
+			}
+		});
+
+		menu.querySelectorAll('[role="option"]').forEach((opt) => {
+			opt.addEventListener('click', (e) => {
+				e.preventDefault();
+				const href = opt.getAttribute('data-href');
+				const text = opt.getAttribute('data-label');
+				if (href) go.setAttribute('href', href);
+				if (text) label.textContent = text;
+				menu.querySelectorAll('[role="option"]').forEach((o) => o.setAttribute('aria-selected', 'false'));
+				opt.setAttribute('aria-selected', 'true');
+				menu.hidden = true;
+				toggle.setAttribute('aria-expanded', 'false');
+				toggle.focus();
+			});
+		});
+
+		toggle.addEventListener('keydown', (e) => {
+			if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				if (menu.hidden) toggle.click();
+			} else if (e.key === 'Escape') {
+				menu.hidden = true;
+				toggle.setAttribute('aria-expanded', 'false');
+			}
+		});
+
+		menu.addEventListener('keydown', (e) => {
+			const options = [...menu.querySelectorAll('[role="option"]')];
+			const i = options.indexOf(document.activeElement);
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				menu.hidden = true;
+				toggle.setAttribute('aria-expanded', 'false');
+				toggle.focus();
+			} else if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				options[(i + 1) % options.length]?.focus();
+			} else if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				options[(i - 1 + options.length) % options.length]?.focus();
+			} else if (e.key === 'Home') {
+				e.preventDefault();
+				options[0]?.focus();
+			} else if (e.key === 'End') {
+				e.preventDefault();
+				options[options.length - 1]?.focus();
+			}
+		});
+	});
+
+	document.addEventListener('click', () => closeAll());
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') closeAll();
+	});
+</script>
 
 <style>
 	.dl {
@@ -262,7 +386,6 @@ function buttonLabel(asset: Asset) {
 		display: block;
 		margin-bottom: var(--space-xs);
 	}
-	/* Black Apple glyph → light on dark theme */
 	:global(:root[data-theme='dark']) .dl-card__icon--apple,
 	:global(:root:not([data-theme='light'])) .dl-card__icon--apple {
 		filter: invert(1);
@@ -273,65 +396,122 @@ function buttonLabel(asset: Asset) {
 		font-weight: 500;
 		letter-spacing: -0.02em;
 	}
-	.dl-card__detail {
-		margin: 0;
-		font-size: var(--type-caption);
-		color: var(--color-mute);
-		line-height: 1.4;
-	}
 	.dl-card__actions {
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: var(--space-sm);
 		width: 100%;
 		margin-top: var(--space-md);
 	}
-	.dl-btn {
+
+	/* Dark split pill — readable on both themes */
+	.dl-split {
+		position: relative;
+		display: flex;
+		align-items: stretch;
+		width: 100%;
+		min-height: 40px;
+		border-radius: var(--radius-full);
+		background: var(--color-ink);
+		color: var(--color-on-primary);
+		overflow: visible;
+	}
+	.dl-split__go {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		box-sizing: border-box;
-		height: 40px;
+		flex: 0 0 auto;
 		padding: 0 var(--space-md);
-		border-radius: var(--radius-full);
+		color: inherit;
 		text-decoration: none;
 		font-weight: 500;
 		font-size: var(--type-body);
 		line-height: 1;
-		background: var(--color-canvas-light);
-		color: var(--color-ink);
-		border: 1px solid var(--color-ink);
+		white-space: nowrap;
+		border-radius: var(--radius-full) 0 0 var(--radius-full);
 	}
-	:global(:root[data-theme='light']) .dl-btn {
-		background: var(--color-ink);
-		color: var(--color-on-primary);
-		border-color: var(--color-ink);
+	.dl-split__go:hover,
+	.dl-split__go:focus-visible {
+		background: rgba(255, 255, 255, 0.08);
+		outline: none;
 	}
-	.dl-card__hint {
-		margin-top: auto;
-		padding-top: var(--space-md);
-		width: 100%;
-		text-align: left;
-		font-size: var(--type-body-sm);
-		color: var(--color-ash);
-		border-top: 1px solid var(--color-hairline-soft);
+	.dl-split__sep {
+		width: 1px;
+		align-self: stretch;
+		margin: 8px 0;
+		background: rgba(255, 255, 255, 0.35);
+		flex-shrink: 0;
 	}
-	:global(:root[data-theme='light']) .dl-card__hint {
-		color: var(--color-ink-soft);
-		border-top-color: var(--color-hairline);
+	.dl-split__picker {
+		position: relative;
+		flex: 1 1 auto;
+		min-width: 0;
+		display: flex;
 	}
-	.dl-card__hint strong {
-		display: block;
-		font-size: var(--type-caption);
-		font-weight: 500;
-		margin-bottom: var(--space-xxs);
+	.dl-split__fmt {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		flex: 1 1 auto;
+		min-width: 0;
+		padding: 0 var(--space-md);
+		border: none;
+		background: transparent;
 		color: inherit;
+		font: inherit;
+		font-weight: 500;
+		font-size: var(--type-caption);
+		line-height: 1.2;
+		cursor: pointer;
+		border-radius: 0 var(--radius-full) var(--radius-full) 0;
+		white-space: nowrap;
 	}
-	.dl-card__hint p {
+	.dl-split__fmt--static {
+		cursor: default;
+		pointer-events: none;
+	}
+	button.dl-split__fmt:hover,
+	button.dl-split__fmt:focus-visible {
+		background: rgba(255, 255, 255, 0.08);
+		outline: none;
+	}
+	.dl-split__chev {
+		flex-shrink: 0;
+		opacity: 0.9;
+	}
+	.dl-split__menu {
+		position: absolute;
+		top: calc(100% + 6px);
+		right: 0;
+		left: 0;
+		z-index: 5;
 		margin: 0;
-		line-height: 1.45;
-		font-size: var(--type-meta);
-		color: var(--color-mute);
+		padding: 6px;
+		list-style: none;
+		border-radius: var(--radius-app-lg);
+		background: var(--color-ink);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+		text-align: left;
+	}
+	.dl-split__option {
+		display: block;
+		width: 100%;
+		padding: 8px 10px;
+		border: none;
+		border-radius: var(--radius-app-md);
+		background: transparent;
+		color: var(--color-on-primary);
+		font: inherit;
+		font-size: var(--type-caption);
+		text-align: left;
+		cursor: pointer;
+	}
+	.dl-split__option:hover,
+	.dl-split__option:focus-visible,
+	.dl-split__option[aria-selected='true'] {
+		background: rgba(255, 255, 255, 0.1);
+		outline: none;
 	}
 </style>
